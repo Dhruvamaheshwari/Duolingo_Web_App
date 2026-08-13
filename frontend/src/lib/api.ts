@@ -56,19 +56,19 @@ export interface LeaderboardEntry {
 }
 
 export const getLearningPath = async (): Promise<Course> => {
-  const res = await fetch(`${API_URL}/learning-path/`);
+  const res = await fetch(`${API_URL}/learning-path/`, { credentials: 'include' });
   if (!res.ok) throw new Error('Failed to fetch learning path');
   return res.json();
 };
 
 export const getLesson = async (id: number): Promise<Lesson> => {
-  const res = await fetch(`${API_URL}/lessons/${id}/`);
+  const res = await fetch(`${API_URL}/lessons/${id}/`, { credentials: 'include' });
   if (!res.ok) throw new Error('Failed to fetch lesson');
   return res.json();
 };
 
 export const getLearnerProgress = async (): Promise<LearnerProgress> => {
-  const res = await fetch(`${API_URL}/progress/`);
+  const res = await fetch(`${API_URL}/progress/`, { credentials: 'include' });
   if (!res.ok) throw new Error('Failed to fetch progress');
   return res.json();
 };
@@ -82,6 +82,7 @@ export const completeLesson = async (id: number): Promise<{
 }> => {
   const res = await fetch(`${API_URL}/lessons/${id}/complete/`, {
     method: 'POST',
+    credentials: 'include',
   });
   if (!res.ok) throw new Error('Failed to complete lesson');
   return res.json();
@@ -90,6 +91,7 @@ export const completeLesson = async (id: number): Promise<{
 export const refillHearts = async (): Promise<{ success: boolean; hearts: number }> => {
   const res = await fetch(`${API_URL}/progress/refill-hearts/`, {
     method: 'POST',
+    credentials: 'include',
   });
   if (!res.ok) throw new Error('Failed to refill hearts');
   return res.json();
@@ -98,13 +100,65 @@ export const refillHearts = async (): Promise<{ success: boolean; hearts: number
 export const deductHeart = async (): Promise<{ success: boolean; hearts: number }> => {
   const res = await fetch(`${API_URL}/progress/deduct-heart/`, {
     method: 'POST',
+    credentials: 'include',
   });
   if (!res.ok) throw new Error('Failed to deduct heart');
   return res.json();
 };
 
 export const getLeaderboard = async (): Promise<LeaderboardEntry[]> => {
-  const res = await fetch(`${API_URL}/progress/leaderboard/`);
+  const res = await fetch(`${API_URL}/progress/leaderboard/`, { credentials: 'include' });
   if (!res.ok) throw new Error('Failed to fetch leaderboard');
+  return res.json();
+};
+
+export interface User {
+  id: number;
+  email: string;
+  name: string;
+}
+
+export const signup = async (data: any): Promise<{ message: string; user: User }> => {
+  const res = await fetch(`${API_URL}/auth/signup/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to signup');
+  }
+  return res.json();
+};
+
+export const login = async (data: any): Promise<{ message: string; user: User }> => {
+  const res = await fetch(`${API_URL}/auth/login/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to login');
+  }
+  return res.json();
+};
+
+export const logout = async (): Promise<{ message: string }> => {
+  const res = await fetch(`${API_URL}/auth/logout/`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Failed to logout');
+  return res.json();
+};
+
+export const getMe = async (): Promise<{ user: User }> => {
+  const res = await fetch(`${API_URL}/auth/me/`, {
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Not authenticated');
   return res.json();
 };

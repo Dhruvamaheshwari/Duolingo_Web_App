@@ -21,8 +21,12 @@ export default function Home() {
         ]);
         setCourse(courseData);
         setProgress(progressData);
-      } catch (err) {
-        console.error(err);
+      } catch (err: any) {
+        if (err.message === 'Not authenticated' || err.message.includes('401')) {
+          router.push('/login');
+        } else {
+          console.error(err);
+        }
       } finally {
         setLoading(false);
       }
@@ -70,6 +74,13 @@ export default function Home() {
             </div>
             PROFILE
           </Link>
+          <button onClick={async () => {
+            const { logout } = await import('@/lib/api');
+            await logout();
+            router.push('/login');
+          }} className="ml-4 hover:text-red-500 transition-colors flex items-center gap-2 font-bold text-gray-400">
+            LOGOUT
+          </button>
         </div>
       </header>
 

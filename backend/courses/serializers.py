@@ -14,9 +14,8 @@ class SkillSerializer(serializers.ModelSerializer):
 
     def get_progress(self, obj):
         request = self.context.get('request')
-        user = getattr(request, 'user', None)
-        if user and not user.is_authenticated:
-            user = User.objects.first()
+        user = request.user if request and request.user.is_authenticated else None
+
             
         if user:
             progress_obj = UserSkillProgress.objects.filter(user=user, skill=obj).first()
@@ -26,9 +25,7 @@ class SkillSerializer(serializers.ModelSerializer):
 
     def get_state(self, obj):
         request = self.context.get('request')
-        user = getattr(request, 'user', None)
-        if user and not user.is_authenticated:
-            user = User.objects.first()
+        user = request.user if request and request.user.is_authenticated else None
 
         if user:
             progress_obj = UserSkillProgress.objects.filter(user=user, skill=obj).first()
@@ -60,9 +57,7 @@ class SkillSerializer(serializers.ModelSerializer):
 
     def get_first_lesson_id(self, obj):
         request = self.context.get('request')
-        user = getattr(request, 'user', None)
-        if user and not user.is_authenticated:
-            user = User.objects.first()
+        user = request.user if request and request.user.is_authenticated else None
             
         if user:
             completed_lesson_ids = UserSkillProgress.objects.none() # just a placeholder

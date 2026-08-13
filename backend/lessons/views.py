@@ -12,9 +12,9 @@ from django.contrib.auth.models import User
 class LessonView(APIView):
     def get(self, request, pk):
         lesson = get_object_or_404(Lesson, pk=pk)
-        user = getattr(request, 'user', None)
-        if user and not user.is_authenticated:
-            user = User.objects.first()
+        user = request.user
+        if not user.is_authenticated:
+            return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
             
         if user:
             skill = lesson.skill
@@ -54,10 +54,8 @@ class LessonView(APIView):
 class CompleteLessonView(APIView):
     def post(self, request, pk):
         lesson = get_object_or_404(Lesson, pk=pk)
-        user = getattr(request, 'user', None)
-        if user and not user.is_authenticated:
-            user = User.objects.first()
-        if not user:
+        user = request.user
+        if not user.is_authenticated:
             return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
             
         # Check unit access

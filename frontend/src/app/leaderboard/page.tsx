@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getLeaderboard, getLearnerProgress, LeaderboardEntry, LearnerProgress } from "@/lib/api";
 import { Trophy, Medal, Flame, Zap, Heart } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function LeaderboardPage() {
+  const router = useRouter();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [progress, setProgress] = useState<LearnerProgress | null>(null);
   const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     async function loadData() {
@@ -19,8 +22,12 @@ export default function LeaderboardPage() {
         ]);
         setLeaderboard(lbData);
         setProgress(progData);
-      } catch (err) {
-        console.error(err);
+      } catch (err: any) {
+        if (err.message === 'Not authenticated' || err.message.includes('401') || err.message.includes('Unauthorized')) {
+          router.push('/login');
+        } else {
+          console.error(err);
+        }
       } finally {
         setLoading(false);
       }

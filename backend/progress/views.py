@@ -11,20 +11,16 @@ class ProgressView(generics.RetrieveAPIView):
     serializer_class = UserStatsSerializer
 
     def get_object(self):
-        user = getattr(self.request, 'user', None)
-        if user and not user.is_authenticated:
-            user = User.objects.first()
-        if user:
-            stats, _ = UserStats.objects.get_or_create(user=user)
-            return stats
-        return None
+        user = self.request.user
+        if not user.is_authenticated:
+            return None
+        stats, _ = UserStats.objects.get_or_create(user=user)
+        return stats
 
 class DeductHeartView(APIView):
     def post(self, request):
-        user = getattr(request, 'user', None)
-        if user and not user.is_authenticated:
-            user = User.objects.first()
-        if not user:
+        user = request.user
+        if not user.is_authenticated:
             return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
             
         with transaction.atomic():
@@ -38,10 +34,8 @@ class DeductHeartView(APIView):
 
 class RefillHeartsView(APIView):
     def post(self, request):
-        user = getattr(request, 'user', None)
-        if user and not user.is_authenticated:
-            user = User.objects.first()
-        if not user:
+        user = request.user
+        if not user.is_authenticated:
             return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
             
         with transaction.atomic():
@@ -60,6 +54,6 @@ class LeaderboardView(APIView):
                 'rank': rank,
                 'username': stat.user.username,
                 'total_xp': stat.total_xp,
-                'is_current': stat.user == getattr(request, 'user', User.objects.first())
+                'is_current': request.user.is_authenticated and stat.user == request.user
             })
         return Response(data)

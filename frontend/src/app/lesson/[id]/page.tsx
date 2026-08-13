@@ -53,8 +53,12 @@ export default function LessonPage() {
         ]);
         setLesson(lessonData);
         setProgress(progressData);
-      } catch (err) {
-        console.error(err);
+      } catch (err: any) {
+        if (err.message === 'Not authenticated' || err.message.includes('401') || err.message.includes('Unauthorized')) {
+          router.push('/login');
+        } else {
+          console.error(err);
+        }
       } finally {
         setLoading(false);
       }

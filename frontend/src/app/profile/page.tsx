@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { getLearnerProgress, LearnerProgress } from "@/lib/api";
 import { Zap, Flame, Book, Crown, Target } from "lucide-react";
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [progress, setProgress] = useState<LearnerProgress | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -14,8 +16,12 @@ export default function ProfilePage() {
       try {
         const data = await getLearnerProgress();
         setProgress(data);
-      } catch (err) {
-        console.error(err);
+      } catch (err: any) {
+        if (err.message === 'Not authenticated' || err.message.includes('401') || err.message.includes('Unauthorized')) {
+          router.push('/login');
+        } else {
+          console.error(err);
+        }
       } finally {
         setLoading(false);
       }
@@ -46,6 +52,13 @@ export default function ProfilePage() {
           <span className="text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 pb-1 flex items-center gap-2">
             PROFILE
           </span>
+          <button onClick={async () => {
+            const { logout } = await import('@/lib/api');
+            await logout();
+            router.push('/login');
+          }} className="ml-4 hover:text-red-500 transition-colors flex items-center gap-2 font-bold text-gray-400">
+            LOGOUT
+          </button>
         </div>
       </header>
 

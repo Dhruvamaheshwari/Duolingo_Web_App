@@ -10,6 +10,7 @@ class LearnerProgressRulesTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.force_login(self.user)
         
         # Create hierarchy
         self.course = Course.objects.create(name='Test Course')
