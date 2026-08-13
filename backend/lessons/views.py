@@ -62,8 +62,7 @@ class CompleteLessonView(APIView):
         with transaction.atomic():
             prog, _ = UserLessonProgress.objects.select_for_update().get_or_create(user=user, lesson=lesson)
             
-            if prog.completed:
-                return Response({'error': 'Lesson already completed.'}, status=status.HTTP_400_BAD_REQUEST)
+            # Allow re-completing lessons (XP is still awarded for practice)
                 
             prog.completed = True
             prog.completed_at = timezone.now()
