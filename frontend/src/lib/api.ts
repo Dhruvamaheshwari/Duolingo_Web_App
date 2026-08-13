@@ -34,8 +34,8 @@ export interface LearnerProgress {
   last_activity_date: string | null;
   daily_xp: number;
   daily_goal: number;
-  skill_progress: any[];
-  lesson_progress: any[];
+  skill_progress: Record<string, unknown>[];
+  lesson_progress: Record<string, unknown>[];
 }
 
 export interface Lesson {
@@ -43,7 +43,7 @@ export interface Lesson {
   title: string;
   position: number;
   skill: number;
-  exercises?: any[];
+  exercises?: Record<string, unknown>[];
 }
 
 export interface LeaderboardEntry {

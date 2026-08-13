@@ -30,7 +30,7 @@ export default function ProfilePage() {
     return <div className="flex h-screen items-center justify-center font-bold text-xl text-red-500">Failed to load profile.</div>;
   }
 
-  const completedSkills = progress.skill_progress?.filter((s: any) => s.completed).length || 0;
+  const completedSkills = progress.skill_progress?.filter((s: Record<string, unknown>) => s.completed).length || 0;
   const completedLessons = progress.lesson_progress?.length || 0;
 
   return (

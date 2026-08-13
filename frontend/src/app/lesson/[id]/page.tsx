@@ -33,6 +33,7 @@ export default function LessonPage() {
     if (currentExercise && currentExercise.type === 'match_pairs') {
       const answerObj = currentExercise.answer as Record<string, string>;
       const allWords = [...Object.keys(answerObj), ...Object.values(answerObj)];
+      // eslint-disable-next-line
       setShuffledTiles(allWords.sort(() => Math.random() - 0.5));
       setMatchedTiles([]);
       setSelectedTile(null);
