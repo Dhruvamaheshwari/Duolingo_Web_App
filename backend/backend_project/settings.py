@@ -39,10 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'users',
-    'courses',
-    'lessons',
-    'progress',
 ]
 
 MIDDLEWARE = [
@@ -132,8 +128,6 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
-
-AUTH_USER_MODEL = 'users.User'
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
