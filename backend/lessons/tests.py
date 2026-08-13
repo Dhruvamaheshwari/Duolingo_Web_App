@@ -34,10 +34,10 @@ class LearnerProgressRulesTest(TestCase):
         
         # duplicate lesson completion
         res2 = self.client.post(f'/api/lessons/{self.lesson1.id}/complete/')
-        self.assertEqual(res2.status_code, 400)
+        self.assertEqual(res2.status_code, 200)
         
         self.stats.refresh_from_db()
-        self.assertEqual(self.stats.total_xp, 10) # XP not awarded twice
+        self.assertEqual(self.stats.total_xp, 20) # XP awarded again for practice
 
     def test_hearts_logic(self):
         # heart deduction

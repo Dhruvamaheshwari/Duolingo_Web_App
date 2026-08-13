@@ -48,6 +48,22 @@ class SkillSerializer(serializers.ModelSerializer):
         return 'locked'
 
     def get_first_lesson_id(self, obj):
+        request = self.context.get('request')
+        user = getattr(request, 'user', None)
+        if user and not user.is_authenticated:
+            user = User.objects.first()
+            
+        if user:
+            completed_lesson_ids = UserSkillProgress.objects.none() # just a placeholder
+            from progress.models import UserLessonProgress
+            completed_lesson_ids = UserLessonProgress.objects.filter(
+                user=user, lesson__skill=obj, completed=True
+            ).values_list('lesson_id', flat=True)
+            
+            next_lesson = obj.lessons.exclude(id__in=completed_lesson_ids).order_by('position').first()
+            if next_lesson:
+                return next_lesson.id
+
         first_lesson = obj.lessons.order_by('position').first()
         return first_lesson.id if first_lesson else None
 
