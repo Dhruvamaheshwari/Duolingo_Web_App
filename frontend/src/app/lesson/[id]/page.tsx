@@ -72,7 +72,7 @@ export default function LessonPage() {
   const handleCheck = async () => {
     if (!currentExercise || status !== 'idle') return;
 
-    if (currentExercise.type !== 'multiple_choice' && currentExercise.type !== 'word_bank' && currentExercise.type !== 'fill_blank') {
+    if (currentExercise.type !== 'multiple_choice' && currentExercise.type !== 'word_bank' && currentExercise.type !== 'fill_blank' && currentExercise.type !== 'type_answer') {
       setStatus('correct');
       return;
     }
@@ -82,6 +82,11 @@ export default function LessonPage() {
     if (currentExercise.type === 'multiple_choice' || currentExercise.type === 'fill_blank') {
       if (!selectedOption) return;
       isCorrect = (selectedOption === currentExercise.answer);
+    } else if (currentExercise.type === 'type_answer') {
+      if (!selectedOption || selectedOption.trim() === '') return;
+      const userInput = selectedOption.trim().toLowerCase();
+      const correctAnswer = String(currentExercise.answer).trim().toLowerCase();
+      isCorrect = (userInput === correctAnswer);
     } else if (currentExercise.type === 'word_bank') {
       if (selectedWordIndices.length === 0) return;
       const selectedStr = selectedWordIndices.map(i => currentExercise.options[i]).join(' ');
@@ -328,6 +333,28 @@ export default function LessonPage() {
                   ))}
                 </div>
               </div>
+            ) : currentExercise.type === 'type_answer' ? (
+              <div className="w-full flex flex-col gap-6 items-center">
+                <h2 className="text-2xl font-bold mb-8 text-center leading-loose">
+                  {currentExercise.question}
+                </h2>
+                
+                <div className="w-full max-w-lg">
+                  <textarea
+                    autoFocus
+                    value={selectedOption || ''}
+                    onChange={(e) => status === 'idle' && setSelectedOption(e.target.value)}
+                    disabled={status !== 'idle'}
+                    placeholder="Type your answer here..."
+                    className={`
+                      w-full p-4 rounded-xl border-2 font-bold text-lg resize-none min-h-[120px] focus:outline-none transition-all
+                      ${status === 'idle' ? 'border-gray-300 focus:border-blue-400 focus:bg-blue-50 bg-gray-50 text-blue-500' : ''}
+                      ${status === 'correct' ? 'border-green-500 bg-green-50 text-green-700' : ''}
+                      ${status === 'incorrect' ? 'border-red-500 bg-red-50 text-red-700' : ''}
+                    `}
+                  />
+                </div>
+              </div>
             ) : (
               <div className="w-full h-64 border-4 border-dashed border-gray-300 rounded-3xl flex flex-col items-center justify-center bg-gray-50 mb-8">
                 <p className="text-gray-500 font-bold mb-2">Unsupported Exercise Type: {currentExercise.type}</p>
@@ -387,7 +414,7 @@ export default function LessonPage() {
                 className="px-10 py-3 font-bold text-white bg-green-500 border-b-4 border-green-600 rounded-2xl active:border-b-0 active:translate-y-1 hover:bg-green-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:active:border-b-4 disabled:active:translate-y-0"
                 onClick={handleCheck}
                 disabled={
-                  ((currentExercise?.type === 'multiple_choice' || currentExercise?.type === 'fill_blank') && !selectedOption) ||
+                  ((currentExercise?.type === 'multiple_choice' || currentExercise?.type === 'fill_blank' || currentExercise?.type === 'type_answer') && (!selectedOption || selectedOption.trim() === '')) ||
                   (currentExercise?.type === 'word_bank' && selectedWordIndices.length === 0) ||
                   (currentExercise?.type === 'match_pairs')
                 }
