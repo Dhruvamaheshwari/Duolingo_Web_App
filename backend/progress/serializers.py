@@ -18,11 +18,12 @@ class UserLessonProgressSerializer(serializers.ModelSerializer):
 class UserStatsSerializer(serializers.ModelSerializer):
     skill_progress = serializers.SerializerMethodField()
     lesson_progress = serializers.SerializerMethodField()
+    username = serializers.CharField(source='user.username', read_only=True)
 
     class Meta:
         model = UserStats
         fields = [
-            'total_xp', 'current_streak', 'hearts', 
+            'username', 'total_xp', 'current_streak', 'hearts', 
             'last_activity_date', 'daily_xp', 'daily_goal',
             'skill_progress', 'lesson_progress'
         ]

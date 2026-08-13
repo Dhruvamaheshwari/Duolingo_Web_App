@@ -27,6 +27,7 @@ export interface Course {
 }
 
 export interface LearnerProgress {
+  username: string;
   total_xp: number;
   current_streak: number;
   hearts: number;

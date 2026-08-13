@@ -107,4 +107,10 @@ class CompleteLessonView(APIView):
                 skill_prog.completed = True
             skill_prog.save()
             
-        return Response({'success': True, 'skill_progress_percent': skill_prog.progress_percent}, status=status.HTTP_200_OK)
+        return Response({
+            'success': True, 
+            'skill_progress_percent': skill_prog.progress_percent,
+            'xp_earned': skill.xp_reward,
+            'new_total_xp': stats.total_xp,
+            'new_streak': stats.current_streak
+        }, status=status.HTTP_200_OK)

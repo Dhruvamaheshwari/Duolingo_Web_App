@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { getLearningPath, getLearnerProgress, Course, LearnerProgress } from "@/lib/api";
 
 export default function Home() {
@@ -41,7 +42,9 @@ export default function Home() {
     <div className="flex min-h-screen flex-col bg-[#f7f9fa] font-sans text-gray-800">
       {/* Top Bar / Stats */}
       <header className="sticky top-0 z-10 flex h-16 w-full items-center justify-between border-b-2 border-gray-200 bg-white px-4 md:px-8">
-        <div className="text-2xl font-extrabold text-green-500">LingoClone</div>
+        <Link href="/" className="text-2xl font-extrabold text-green-500 hover:text-green-400 transition-colors">
+          LingoClone
+        </Link>
         <div className="flex items-center gap-6 font-bold text-gray-500">
           <div className="flex items-center gap-2">
             <span className="text-orange-500">🔥</span>
@@ -52,13 +55,15 @@ export default function Home() {
             <span>{progress.total_xp} XP</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-blue-400">💎</span>
-            <span className="text-blue-400">500</span> {/* Mocked gems */}
-          </div>
-          <div className="flex items-center gap-2">
             <span className="text-red-500">❤️</span>
             <span className="text-red-500">{progress.hearts}</span>
           </div>
+          <Link href="/profile" className="ml-4 hover:text-gray-800 transition-colors flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-sm">
+              {progress.username ? progress.username.charAt(0).toUpperCase() : 'U'}
+            </div>
+            PROFILE
+          </Link>
         </div>
       </header>
 
