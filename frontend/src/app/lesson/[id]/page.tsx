@@ -17,8 +17,24 @@ export default function LessonPage() {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [selectedWordIndices, setSelectedWordIndices] = useState<number[]>([]);
+  const [shuffledTiles, setShuffledTiles] = useState<string[]>([]);
+  const [matchedTiles, setMatchedTiles] = useState<string[]>([]);
+  const [selectedTile, setSelectedTile] = useState<string | null>(null);
+  const [wrongPair, setWrongPair] = useState<string[]>([]);
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
   const [isCompleting, setIsCompleting] = useState(false);
+
+  useEffect(() => {
+    const currentExercise = lesson?.exercises?.[currentExerciseIndex];
+    if (currentExercise && currentExercise.type === 'match_pairs') {
+      const answerObj = currentExercise.answer as Record<string, string>;
+      const allWords = [...Object.keys(answerObj), ...Object.values(answerObj)];
+      setShuffledTiles(allWords.sort(() => Math.random() - 0.5));
+      setMatchedTiles([]);
+      setSelectedTile(null);
+      setWrongPair([]);
+    }
+  }, [lesson, currentExerciseIndex]);
 
   useEffect(() => {
     if (!id) return;
@@ -93,10 +109,55 @@ export default function LessonPage() {
       router.push("/");
       return;
     }
+    
+    if (status === 'incorrect' && currentExercise?.type === 'match_pairs') {
+      setStatus('idle');
+      setSelectedTile(null);
+      setWrongPair([]);
+      return;
+    }
+
     setCurrentExerciseIndex(prev => prev + 1);
     setSelectedOption(null);
     setSelectedWordIndices([]);
     setStatus('idle');
+  };
+
+  const handleTileClick = async (word: string) => {
+    if (status !== 'idle') return;
+    if (matchedTiles.includes(word)) return;
+
+    if (!selectedTile) {
+      setSelectedTile(word);
+      return;
+    }
+
+    if (selectedTile === word) {
+      setSelectedTile(null);
+      return;
+    }
+
+    const answerObj = currentExercise.answer as Record<string, string>;
+    const isPair = answerObj[selectedTile] === word || answerObj[word] === selectedTile;
+
+    if (isPair) {
+      const newMatched = [...matchedTiles, selectedTile, word];
+      setMatchedTiles(newMatched);
+      setSelectedTile(null);
+      
+      if (newMatched.length === Object.keys(answerObj).length * 2) {
+        setStatus('correct');
+      }
+    } else {
+      setWrongPair([selectedTile, word]);
+      setStatus('incorrect');
+      try {
+        const res = await deductHeart();
+        setProgress(prev => prev ? { ...prev, hearts: res.hearts } : null);
+      } catch (err) {
+        console.error("Failed to deduct heart:", err);
+      }
+    }
   };
 
   const handleFinish = async () => {
@@ -203,6 +264,35 @@ export default function LessonPage() {
                   })}
                 </div>
               </div>
+            ) : currentExercise.type === 'match_pairs' ? (
+              <div className="w-full flex flex-col gap-8">
+                <h2 className="text-2xl font-bold mb-4">{currentExercise.question || "Match the pairs"}</h2>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  {shuffledTiles.map((word, idx) => {
+                    const isMatched = matchedTiles.includes(word);
+                    const isSelected = selectedTile === word;
+                    const isWrong = wrongPair.includes(word);
+                    
+                    return (
+                      <button
+                        key={`mp-${idx}`}
+                        onClick={() => handleTileClick(word)}
+                        disabled={isMatched || status !== 'idle'}
+                        className={`
+                          p-4 rounded-xl border-2 font-bold text-lg transition-all
+                          ${isMatched ? 'border-gray-200 bg-gray-100 text-gray-300 opacity-50 cursor-default' : ''}
+                          ${isSelected && status === 'idle' ? 'border-blue-400 bg-blue-50 text-blue-500' : ''}
+                          ${isWrong && status === 'incorrect' ? 'border-red-500 bg-red-50 text-red-600' : ''}
+                          ${!isMatched && !isSelected && !isWrong ? 'border-gray-200 bg-white hover:bg-gray-50 active:translate-y-1' : ''}
+                        `}
+                      >
+                        {word}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             ) : (
               <div className="w-full h-64 border-4 border-dashed border-gray-300 rounded-3xl flex flex-col items-center justify-center bg-gray-50 mb-8">
                 <p className="text-gray-500 font-bold mb-2">Unsupported Exercise Type: {currentExercise.type}</p>
@@ -234,7 +324,12 @@ export default function LessonPage() {
                 <div className="bg-white rounded-full p-2"><span className="text-2xl">❌</span></div>
                 <div className="flex flex-col">
                   <h2 className="text-2xl font-bold">Incorrect</h2>
-                  <p className="font-medium">Correct answer: {Array.isArray(currentExercise?.answer) ? currentExercise?.answer.join(' ') : String(currentExercise?.answer)}</p>
+                  <p className="font-medium">
+                    {currentExercise?.type === 'match_pairs' 
+                      ? 'That pair does not match.' 
+                      : `Correct answer: ${Array.isArray(currentExercise?.answer) ? currentExercise?.answer.join(' ') : String(currentExercise?.answer)}`
+                    }
+                  </p>
                 </div>
               </div>
             )}
@@ -258,7 +353,8 @@ export default function LessonPage() {
                 onClick={handleCheck}
                 disabled={
                   (currentExercise?.type === 'multiple_choice' && !selectedOption) ||
-                  (currentExercise?.type === 'word_bank' && selectedWordIndices.length === 0)
+                  (currentExercise?.type === 'word_bank' && selectedWordIndices.length === 0) ||
+                  (currentExercise?.type === 'match_pairs')
                 }
               >
                 CHECK
