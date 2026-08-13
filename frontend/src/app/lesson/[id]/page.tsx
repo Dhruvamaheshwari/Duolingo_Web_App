@@ -307,7 +307,7 @@ export default function LessonPage() {
             ) : currentExercise.type === 'fill_blank' ? (
               <div className="w-full flex flex-col gap-6 items-center">
                 <h2 className="text-2xl font-bold mb-8 text-center leading-loose">
-                  {currentExercise.question.split('___').map((part, i, arr) => (
+                  {currentExercise.question.split('___').map((part: string, i: number, arr: string[]) => (
                     <span key={i}>
                       {part}
                       {i < arr.length - 1 && (
@@ -457,9 +457,7 @@ export default function LessonPage() {
                       (currentExercise?.type === 'word_bank' && selectedWordIndices.length === 0) ||
                       (currentExercise?.type === 'match_pairs')
                     }
-                  (currentExercise?.type === 'match_pairs')
-                }
-              >
+                  >
                 CHECK
               </button>
             ) : (
@@ -473,6 +471,8 @@ export default function LessonPage() {
               </button>
             )}
           </div>
+          </>
+          )}
         </div>
       </footer>
     </div>
