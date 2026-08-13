@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.utils import timezone
 from .models import Lesson
+from courses.models import Skill
 from progress.models import UserLessonProgress, UserSkillProgress, UserStats
 from django.contrib.auth.models import User
 
