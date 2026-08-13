@@ -105,7 +105,7 @@ export default function LessonPage() {
   };
 
   const handleNext = () => {
-    if (progress && progress.hearts <= 0) {
+    if (progress && progress.hearts <= 0 && status === 'incorrect') {
       router.push("/");
       return;
     }
