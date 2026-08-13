@@ -1,0 +1,8 @@
+backend/venv/
+backend/__pycache__/
+backend/*.sqlite3
+backend/.env
+
+# Node/Next.js ignores are already inside frontend/.gitignore, but just in case
+node_modules/
+.next/
