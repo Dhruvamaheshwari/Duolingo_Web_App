@@ -17,7 +17,16 @@ class CompleteLessonView(APIView):
         if not user:
             return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
             
-        # Verify access
+        # Check skill access
+        skill = lesson.skill
+        if skill.position > 1:
+            prev_skill = Skill.objects.filter(unit=skill.unit, position=skill.position - 1).first()
+            if prev_skill:
+                prev_prog = UserSkillProgress.objects.filter(user=user, skill=prev_skill).first()
+                if not prev_prog or not prev_prog.completed:
+                    return Response({'error': 'Skill locked.'}, status=status.HTTP_403_FORBIDDEN)
+
+        # Verify lesson access
         if lesson.position > 1:
             prev_lesson = Lesson.objects.filter(skill=lesson.skill, position=lesson.position - 1).first()
             if prev_lesson:

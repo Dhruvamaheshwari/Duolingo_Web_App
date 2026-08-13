@@ -34,19 +34,15 @@ class SkillSerializer(serializers.ModelSerializer):
             if progress_obj and progress_obj.completed:
                 return 'completed'
             
-            all_skills = Skill.objects.filter(unit__course=obj.unit.course).order_by('unit__position', 'position')
-            skill_list = list(all_skills)
-            try:
-                idx = skill_list.index(obj)
-            except ValueError:
-                return 'locked'
+            if obj.position == 1:
+                return 'available'
                 
-            if idx == 0:
-                return 'available'
-            prev_skill = skill_list[idx - 1]
-            prev_prog = UserSkillProgress.objects.filter(user=user, skill=prev_skill).first()
-            if prev_prog and prev_prog.completed:
-                return 'available'
+            prev_skill = Skill.objects.filter(unit=obj.unit, position=obj.position - 1).first()
+            if prev_skill:
+                prev_prog = UserSkillProgress.objects.filter(user=user, skill=prev_skill).first()
+                if prev_prog and prev_prog.completed:
+                    return 'available'
+            
             return 'locked'
         return 'locked'
 
