@@ -38,10 +38,22 @@ class CompleteLessonView(APIView):
             # Update skill progress
             skill = lesson.skill
             
-            # Award XP
+            # Award XP and update streak
             stats, _ = UserStats.objects.select_for_update().get_or_create(user=user)
+            today = timezone.now().date()
+            
+            if stats.last_activity_date == today:
+                stats.daily_xp += skill.xp_reward
+            elif stats.last_activity_date == today - timezone.timedelta(days=1):
+                stats.current_streak += 1
+                stats.daily_xp = skill.xp_reward
+                stats.last_activity_date = today
+            else:
+                stats.current_streak = 1
+                stats.daily_xp = skill.xp_reward
+                stats.last_activity_date = today
+                
             stats.total_xp += skill.xp_reward
-            stats.daily_xp += skill.xp_reward
             stats.save()
             
             total_lessons = skill.lessons.count()
