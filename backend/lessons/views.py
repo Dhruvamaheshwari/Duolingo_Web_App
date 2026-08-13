@@ -12,6 +12,29 @@ from django.contrib.auth.models import User
 class LessonView(APIView):
     def get(self, request, pk):
         lesson = get_object_or_404(Lesson, pk=pk)
+        user = getattr(request, 'user', None)
+        if user and not user.is_authenticated:
+            user = User.objects.first()
+            
+        if user:
+            skill = lesson.skill
+            if skill.unit.position > 1:
+                from courses.models import Unit
+                prev_unit = Unit.objects.filter(course=skill.unit.course, position=skill.unit.position - 1).first()
+                if prev_unit:
+                    last_skill = prev_unit.skills.order_by('-position').first()
+                    if last_skill:
+                        prev_prog = UserSkillProgress.objects.filter(user=user, skill=last_skill).first()
+                        if not prev_prog or not prev_prog.completed:
+                            return Response({'error': 'Unit locked.'}, status=status.HTTP_403_FORBIDDEN)
+            
+            if skill.position > 1:
+                prev_skill = Skill.objects.filter(unit=skill.unit, position=skill.position - 1).first()
+                if prev_skill:
+                    prev_prog = UserSkillProgress.objects.filter(user=user, skill=prev_skill).first()
+                    if not prev_prog or not prev_prog.completed:
+                        return Response({'error': 'Skill locked.'}, status=status.HTTP_403_FORBIDDEN)
+
         exercises = [{
             'id': e.id,
             'type': e.type,
@@ -37,8 +60,19 @@ class CompleteLessonView(APIView):
         if not user:
             return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
             
-        # Check skill access
+        # Check unit access
         skill = lesson.skill
+        if skill.unit.position > 1:
+            from courses.models import Unit
+            prev_unit = Unit.objects.filter(course=skill.unit.course, position=skill.unit.position - 1).first()
+            if prev_unit:
+                last_skill = prev_unit.skills.order_by('-position').first()
+                if last_skill:
+                    prev_prog = UserSkillProgress.objects.filter(user=user, skill=last_skill).first()
+                    if not prev_prog or not prev_prog.completed:
+                        return Response({'error': 'Unit locked.'}, status=status.HTTP_403_FORBIDDEN)
+
+        # Check skill access
         if skill.position > 1:
             prev_skill = Skill.objects.filter(unit=skill.unit, position=skill.position - 1).first()
             if prev_skill:

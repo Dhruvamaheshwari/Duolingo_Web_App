@@ -36,7 +36,18 @@ class SkillSerializer(serializers.ModelSerializer):
                 return 'completed'
             
             if obj.position == 1:
-                return 'available'
+                if obj.unit.position == 1:
+                    return 'available'
+                else:
+                    from courses.models import Unit
+                    prev_unit = Unit.objects.filter(course=obj.unit.course, position=obj.unit.position - 1).first()
+                    if prev_unit:
+                        last_skill = prev_unit.skills.order_by('-position').first()
+                        if last_skill:
+                            prev_prog = UserSkillProgress.objects.filter(user=user, skill=last_skill).first()
+                            if prev_prog and prev_prog.completed:
+                                return 'available'
+                    return 'locked'
                 
             prev_skill = Skill.objects.filter(unit=obj.unit, position=obj.position - 1).first()
             if prev_skill:
