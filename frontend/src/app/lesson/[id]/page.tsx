@@ -202,13 +202,13 @@ export default function LessonPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white font-sans text-gray-800">
+    <div className="flex min-h-screen flex-col bg-white dark:bg-slate-900 font-sans text-gray-800 dark:text-gray-100">
       {showOutModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-md p-8 text-center flex flex-col items-center">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md p-8 text-center flex flex-col items-center">
             <div className="text-6xl mb-6">💔</div>
-            <h2 className="text-3xl font-extrabold text-gray-800 mb-4">Out of Hearts!</h2>
-            <p className="text-gray-500 font-medium mb-8">You made too many mistakes. Refill your hearts to continue learning.</p>
+            <h2 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100 mb-4">Out of Hearts!</h2>
+            <p className="text-gray-500 dark:text-gray-400 font-medium mb-8">You made too many mistakes. Refill your hearts to continue learning.</p>
             
             <button
               onClick={handleRefill}
@@ -219,7 +219,7 @@ export default function LessonPage() {
             </button>
             <button
               onClick={() => router.push('/')}
-              className="w-full py-4 rounded-2xl font-bold text-red-500 text-lg border-2 border-gray-200 active:bg-gray-50 transition-all"
+              className="w-full py-4 rounded-2xl font-bold text-red-500 text-lg border-2 border-gray-200 dark:border-slate-700 active:bg-gray-50 transition-all"
             >
               END LESSON
             </button>
@@ -234,13 +234,13 @@ export default function LessonPage() {
             ✕
           </Link>
           
-          <div className="h-4 flex-1 rounded-full bg-gray-200 overflow-hidden relative">
+          <div className="h-4 flex-1 rounded-full bg-gray-200 dark:bg-slate-700 overflow-hidden relative">
             <div 
               className="h-full bg-green-500 transition-all duration-300 ease-in-out" 
               style={{ width: `${progressPercent}%` }}
             />
             <div 
-              className="absolute top-1 left-2 h-1 rounded-full bg-white opacity-20 transition-all duration-300"
+              className="absolute top-1 left-2 h-1 rounded-full bg-white dark:bg-slate-900 opacity-20 transition-all duration-300"
               style={{ width: `calc(${progressPercent}% - 16px)` }}
             />
           </div>
@@ -269,10 +269,10 @@ export default function LessonPage() {
                       className={`
                         w-full p-4 rounded-2xl border-2 border-b-4 text-left font-bold text-lg transition-all active:border-b-0 active:translate-y-1
                         ${selectedOption === opt && status === 'idle' ? 'border-blue-400 bg-blue-50 text-blue-500' : ''}
-                        ${selectedOption !== opt && status === 'idle' ? 'border-gray-200 hover:bg-gray-50' : ''}
+                        ${selectedOption !== opt && status === 'idle' ? 'border-gray-200 dark:border-slate-700 hover:bg-gray-50' : ''}
                         ${selectedOption === opt && status === 'correct' ? 'border-green-500 bg-green-100 text-green-600' : ''}
                         ${selectedOption === opt && status === 'incorrect' ? 'border-red-500 bg-red-100 text-red-600' : ''}
-                        ${selectedOption !== opt && status !== 'idle' ? 'border-gray-200 opacity-50' : ''}
+                        ${selectedOption !== opt && status !== 'idle' ? 'border-gray-200 dark:border-slate-700 opacity-50' : ''}
                       `}
                     >
                       {opt}
@@ -291,7 +291,7 @@ export default function LessonPage() {
                       key={`sel-${idx}-${orderPos}`}
                       onClick={() => status === 'idle' && setSelectedWordIndices(prev => prev.filter(i => i !== idx))}
                       disabled={status !== 'idle'}
-                      className="px-4 py-2 rounded-2xl border-2 border-b-4 border-gray-200 bg-white font-bold text-lg hover:bg-gray-50 transition-all active:border-b-0 active:translate-y-1"
+                      className="px-4 py-2 rounded-2xl border-2 border-b-4 border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-lg hover:bg-gray-50 transition-all active:border-b-0 active:translate-y-1"
                     >
                       {currentExercise.options[idx]}
                     </button>
@@ -308,7 +308,7 @@ export default function LessonPage() {
                         onClick={() => status === 'idle' && setSelectedWordIndices(prev => [...prev, idx])}
                         disabled={isSelected || status !== 'idle'}
                         className={`px-4 py-2 rounded-2xl border-2 border-b-4 font-bold text-lg transition-all
-                          ${isSelected ? 'border-gray-200 bg-gray-200 text-gray-200 cursor-default border-b-2 translate-y-[2px]' : 'border-gray-200 bg-white hover:bg-gray-50 active:translate-y-1 active:border-b-0'}
+                          ${isSelected ? 'border-gray-200 dark:border-slate-700 bg-gray-200 dark:bg-slate-700 text-gray-200 cursor-default border-b-2 translate-y-[2px]' : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-gray-50 active:translate-y-1 active:border-b-0'}
                         `}
                       >
                         {word}
@@ -334,10 +334,10 @@ export default function LessonPage() {
                         disabled={isMatched || status !== 'idle'}
                         className={`
                           p-4 rounded-2xl border-2 border-b-4 font-bold text-lg transition-all
-                          ${isMatched ? 'border-gray-200 bg-gray-100 text-gray-300 opacity-50 cursor-default border-b-2 translate-y-[2px]' : ''}
+                          ${isMatched ? 'border-gray-200 dark:border-slate-700 bg-gray-100 text-gray-300 opacity-50 cursor-default border-b-2 translate-y-[2px]' : ''}
                           ${isSelected && status === 'idle' ? 'border-blue-400 bg-blue-50 text-blue-500' : ''}
                           ${isWrong && status === 'incorrect' ? 'border-red-500 bg-red-50 text-red-600' : ''}
-                          ${!isMatched && !isSelected && !isWrong ? 'border-gray-200 bg-white hover:bg-gray-50 active:border-b-0 active:translate-y-1' : ''}
+                          ${!isMatched && !isSelected && !isWrong ? 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-gray-50 active:border-b-0 active:translate-y-1' : ''}
                         `}
                       >
                         {word}
@@ -370,10 +370,10 @@ export default function LessonPage() {
                       className={`
                         px-6 py-3 rounded-2xl border-2 border-b-4 font-bold text-lg transition-all active:border-b-0 active:translate-y-1
                         ${selectedOption === opt && status === 'idle' ? 'border-blue-400 bg-blue-50 text-blue-500' : ''}
-                        ${selectedOption !== opt && status === 'idle' ? 'border-gray-200 hover:bg-gray-50' : ''}
+                        ${selectedOption !== opt && status === 'idle' ? 'border-gray-200 dark:border-slate-700 hover:bg-gray-50' : ''}
                         ${selectedOption === opt && status === 'correct' ? 'border-green-500 bg-green-100 text-green-600' : ''}
                         ${selectedOption === opt && status === 'incorrect' ? 'border-red-500 bg-red-100 text-red-600' : ''}
-                        ${selectedOption !== opt && status !== 'idle' ? 'border-gray-200 opacity-50' : ''}
+                        ${selectedOption !== opt && status !== 'idle' ? 'border-gray-200 dark:border-slate-700 opacity-50' : ''}
                       `}
                     >
                       {opt}
@@ -405,7 +405,7 @@ export default function LessonPage() {
               </div>
             ) : (
               <div className="w-full h-64 border-4 border-dashed border-gray-300 rounded-3xl flex flex-col items-center justify-center bg-gray-50 mb-8">
-                <p className="text-gray-500 font-bold mb-2">Unsupported Exercise Type: {currentExercise.type}</p>
+                <p className="text-gray-500 dark:text-gray-400 font-bold mb-2">Unsupported Exercise Type: {currentExercise.type}</p>
                 <p className="text-gray-400">Click Check to skip.</p>
               </div>
             )
@@ -434,7 +434,7 @@ export default function LessonPage() {
               ) : (
                 <>
                   <h2 className="text-3xl font-bold text-green-500">You did it!</h2>
-                  <p className="text-gray-500 mt-4">Click Finish to complete your lesson and claim your XP.</p>
+                  <p className="text-gray-500 dark:text-gray-400 mt-4">Click Finish to complete your lesson and claim your XP.</p>
                 </>
               )}
             </div>
@@ -444,7 +444,7 @@ export default function LessonPage() {
       </main>
 
       {/* Bottom Footer Area */}
-      <footer className={`border-t-2 p-4 transition-colors duration-300 ${status === 'correct' ? 'bg-green-100 border-green-200' : status === 'incorrect' ? 'bg-red-100 border-red-200' : 'bg-white border-gray-200'}`}>
+      <footer className={`border-t-2 p-4 transition-colors duration-300 ${status === 'correct' ? 'bg-green-100 border-green-200' : status === 'incorrect' ? 'bg-red-100 border-red-200' : 'bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-700'}`}>
         <div className="max-w-4xl mx-auto flex justify-between items-center min-h-[80px]">
           {completionData ? (
             <button 
@@ -458,13 +458,13 @@ export default function LessonPage() {
               <div className="flex-1">
                 {status === 'correct' && (
                   <div className="flex items-center gap-4 text-green-600">
-                    <div className="bg-white rounded-full p-2"><span className="text-2xl">✔️</span></div>
+                    <div className="bg-white dark:bg-slate-900 rounded-full p-2"><span className="text-2xl">✔️</span></div>
                     <h2 className="text-2xl font-bold">Good job!</h2>
                   </div>
                 )}
                 {status === 'incorrect' && (
                   <div className="flex items-center gap-4 text-red-500">
-                    <div className="bg-white rounded-full p-2"><span className="text-2xl">❌</span></div>
+                    <div className="bg-white dark:bg-slate-900 rounded-full p-2"><span className="text-2xl">❌</span></div>
                     <div className="flex flex-col">
                       <h2 className="text-2xl font-bold">Incorrect</h2>
                       <p className="font-medium">

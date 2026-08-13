@@ -41,9 +41,9 @@ export default function Home() {
   const zigzagOffsets = [0, 40, 80, 40, 0, -40, -80, -40];
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#f7f9fa] font-sans text-gray-800">
+    <div className="flex min-h-screen flex-col bg-[#f7f9fa] dark:bg-slate-900 font-sans text-gray-800 dark:text-gray-200">
       {/* Top Bar / Stats */}
-      <header className="sticky top-0 z-10 flex h-16 w-full items-center justify-between border-b-2 border-gray-200 bg-white px-4 md:px-8">
+      <header className="sticky top-0 z-10 flex h-16 w-full items-center justify-between border-b-2 border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 md:px-8">
         <Link href="/" className="text-2xl font-extrabold text-green-500 hover:text-green-400 transition-colors">
           LingoClone
         </Link>
@@ -60,10 +60,10 @@ export default function Home() {
             <span className="text-red-500">❤️</span>
             <span className="text-red-500">{progress.hearts}</span>
           </div>
-          <Link href="/leaderboard" className="ml-2 hover:text-gray-800 transition-colors flex items-center gap-2">
+          <Link href="/leaderboard" className="ml-2 hover:text-gray-800 dark:hover:text-gray-300 transition-colors flex items-center gap-2">
             🏆 LEADERBOARD
           </Link>
-          <Link href="/profile" className="ml-4 hover:text-gray-800 transition-colors flex items-center gap-2">
+          <Link href="/profile" className="ml-4 hover:text-gray-800 dark:hover:text-gray-300 transition-colors flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-sm">
               {progress.username ? progress.username.charAt(0).toUpperCase() : 'U'}
             </div>
@@ -76,9 +76,9 @@ export default function Home() {
       <main className="mx-auto flex w-full max-w-2xl flex-col items-center py-10 px-4">
         
         {/* Daily XP Goal Widget */}
-        <div className="w-full mb-10 rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-sm">
+        <div className="w-full mb-10 rounded-2xl border-2 border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold text-gray-700 text-xl flex items-center gap-2">
+            <h3 className="font-bold text-gray-700 dark:text-gray-200 text-xl flex items-center gap-2">
               <span className="text-2xl">🎯</span> Daily Quest
             </h3>
             <span className="font-bold text-gray-500">
@@ -86,7 +86,7 @@ export default function Home() {
             </span>
           </div>
           
-          <div className="h-4 w-full bg-gray-200 rounded-full overflow-hidden">
+          <div className="h-4 w-full bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
             <div 
               className={`h-full rounded-full transition-all duration-500 ${progress.daily_xp >= progress.daily_goal ? 'bg-green-500' : 'bg-yellow-400'}`}
               style={{ width: `${Math.min((progress.daily_xp / progress.daily_goal) * 100, 100)}%` }}
@@ -113,9 +113,9 @@ export default function Home() {
                 const isCompleted = skill.state === 'completed';
                 const isAvailable = skill.state === 'available';
                 
-                let bgColor = "bg-gray-200";
-                let borderColor = "border-gray-300";
-                let textColor = "text-gray-400";
+                let bgColor = "bg-gray-200 dark:bg-slate-700";
+                let borderColor = "border-gray-300 dark:border-slate-600";
+                let textColor = "text-gray-400 dark:text-gray-500";
                 
                 if (isCompleted) {
                   bgColor = "bg-yellow-400";
@@ -152,7 +152,7 @@ export default function Home() {
                         {isCompleted ? "⭐" : isLocked ? "🔒" : "📖"}
                       </span>
                     </button>
-                    <span className="mt-4 text-center font-bold text-gray-500">
+                    <span className="mt-4 text-center font-bold text-gray-500 dark:text-gray-400">
                       {skill.title}
                     </span>
                   </div>
