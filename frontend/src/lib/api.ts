@@ -46,6 +46,13 @@ export interface Lesson {
   exercises?: any[];
 }
 
+export interface LeaderboardEntry {
+  rank: number;
+  username: string;
+  total_xp: number;
+  is_current: boolean;
+}
+
 export const getLearningPath = async (): Promise<Course> => {
   const res = await fetch(`${API_URL}/learning-path/`);
   if (!res.ok) throw new Error('Failed to fetch learning path');
@@ -91,5 +98,11 @@ export const deductHeart = async (): Promise<{ success: boolean; hearts: number 
     method: 'POST',
   });
   if (!res.ok) throw new Error('Failed to deduct heart');
+  return res.json();
+};
+
+export const getLeaderboard = async (): Promise<LeaderboardEntry[]> => {
+  const res = await fetch(`${API_URL}/progress/leaderboard/`);
+  if (!res.ok) throw new Error('Failed to fetch leaderboard');
   return res.json();
 };

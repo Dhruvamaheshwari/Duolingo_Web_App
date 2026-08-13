@@ -58,6 +58,9 @@ export default function Home() {
             <span className="text-red-500">❤️</span>
             <span className="text-red-500">{progress.hearts}</span>
           </div>
+          <Link href="/leaderboard" className="ml-2 hover:text-gray-800 transition-colors flex items-center gap-2">
+            🏆 LEADERBOARD
+          </Link>
           <Link href="/profile" className="ml-4 hover:text-gray-800 transition-colors flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-sm">
               {progress.username ? progress.username.charAt(0).toUpperCase() : 'U'}

@@ -49,3 +49,17 @@ class RefillHeartsView(APIView):
             stats.hearts = 5
             stats.save()
             return Response({'success': True, 'hearts': stats.hearts})
+
+class LeaderboardView(APIView):
+    def get(self, request):
+        # Return top 20 users by total_xp
+        top_stats = UserStats.objects.order_by('-total_xp')[:20]
+        data = []
+        for rank, stat in enumerate(top_stats, start=1):
+            data.append({
+                'rank': rank,
+                'username': stat.user.username,
+                'total_xp': stat.total_xp,
+                'is_current': stat.user == getattr(request, 'user', User.objects.first())
+            })
+        return Response(data)
