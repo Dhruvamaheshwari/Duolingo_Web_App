@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.utils import timezone
 from .models import Lesson
-from progress.models import UserLessonProgress, UserSkillProgress
+from progress.models import UserLessonProgress, UserSkillProgress, UserStats
 from django.contrib.auth.models import User
 
 class CompleteLessonView(APIView):
@@ -35,9 +35,15 @@ class CompleteLessonView(APIView):
             prog.completed_at = timezone.now()
             prog.attempts += 1
             prog.save()
-            
             # Update skill progress
             skill = lesson.skill
+            
+            # Award XP
+            stats, _ = UserStats.objects.select_for_update().get_or_create(user=user)
+            stats.total_xp += skill.xp_reward
+            stats.daily_xp += skill.xp_reward
+            stats.save()
+            
             total_lessons = skill.lessons.count()
             completed_lessons = UserLessonProgress.objects.filter(
                 user=user, lesson__skill=skill, completed=True
