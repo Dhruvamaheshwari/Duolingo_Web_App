@@ -9,6 +9,25 @@ from courses.models import Skill
 from progress.models import UserLessonProgress, UserSkillProgress, UserStats
 from django.contrib.auth.models import User
 
+class LessonView(APIView):
+    def get(self, request, pk):
+        lesson = get_object_or_404(Lesson, pk=pk)
+        exercises = [{
+            'id': e.id,
+            'type': e.type,
+            'question': e.question,
+            'answer': e.answer,
+            'options': e.options,
+            'position': e.position
+        } for e in lesson.exercises.all()]
+        return Response({
+            'id': lesson.id,
+            'title': lesson.title,
+            'position': lesson.position,
+            'skill': lesson.skill.id,
+            'exercises': exercises
+        })
+
 class CompleteLessonView(APIView):
     def post(self, request, pk):
         lesson = get_object_or_404(Lesson, pk=pk)
