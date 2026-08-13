@@ -64,6 +64,29 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="mx-auto flex w-full max-w-2xl flex-col items-center py-10 px-4">
+        
+        {/* Daily XP Goal Widget */}
+        <div className="w-full mb-10 rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-sm">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="font-bold text-gray-700 text-xl flex items-center gap-2">
+              <span className="text-2xl">🎯</span> Daily Quest
+            </h3>
+            <span className="font-bold text-gray-500">
+              {progress.daily_xp} / {progress.daily_goal} XP
+            </span>
+          </div>
+          
+          <div className="h-4 w-full bg-gray-200 rounded-full overflow-hidden">
+            <div 
+              className={`h-full rounded-full transition-all duration-500 ${progress.daily_xp >= progress.daily_goal ? 'bg-green-500' : 'bg-yellow-400'}`}
+              style={{ width: `${Math.min((progress.daily_xp / progress.daily_goal) * 100, 100)}%` }}
+            />
+          </div>
+          {progress.daily_xp >= progress.daily_goal && (
+            <p className="mt-4 text-center font-bold text-green-500 animate-pulse">You met your daily goal!</p>
+          )}
+        </div>
+
         {course.units.map((unit) => (
           <div key={unit.id} className="mb-12 w-full">
             {/* Unit Header */}
