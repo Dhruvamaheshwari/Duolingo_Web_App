@@ -24,6 +24,11 @@ class CompleteLessonView(APIView):
                 prev_prog = UserLessonProgress.objects.filter(user=user, lesson=prev_lesson).first()
                 if not prev_prog or not prev_prog.completed:
                     return Response({'error': 'Lesson not accessible yet.'}, status=status.HTTP_403_FORBIDDEN)
+
+        # Check hearts
+        stats, _ = UserStats.objects.get_or_create(user=user)
+        if stats.hearts <= 0:
+            return Response({'error': 'Not enough hearts to continue.'}, status=status.HTTP_403_FORBIDDEN)
         
         with transaction.atomic():
             prog, _ = UserLessonProgress.objects.select_for_update().get_or_create(user=user, lesson=lesson)
