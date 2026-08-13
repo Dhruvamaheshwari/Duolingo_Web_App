@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { getLesson, getLearnerProgress, completeLesson, deductHeart, Lesson, LearnerProgress } from "@/lib/api";
+import { getLesson, getLearnerProgress, completeLesson, deductHeart, refillHearts, Lesson, LearnerProgress } from "@/lib/api";
 
 export default function LessonPage() {
   const params = useParams();
@@ -24,6 +24,9 @@ export default function LessonPage() {
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
   const [isCompleting, setIsCompleting] = useState(false);
   const [completionData, setCompletionData] = useState<{ xp_earned?: number; new_total_xp?: number; new_streak?: number } | null>(null);
+
+  const [showOutModal, setShowOutModal] = useState(false);
+  const [isRefilling, setIsRefilling] = useState(false);
 
   useEffect(() => {
     const currentExercise = lesson?.exercises?.[currentExerciseIndex];
@@ -112,7 +115,7 @@ export default function LessonPage() {
 
   const handleNext = () => {
     if (progress && progress.hearts <= 0 && status === 'incorrect') {
-      router.push("/");
+      setShowOutModal(true);
       return;
     }
     
@@ -166,6 +169,20 @@ export default function LessonPage() {
     }
   };
 
+  const handleRefill = async () => {
+    setIsRefilling(true);
+    try {
+      const res = await refillHearts();
+      setProgress(prev => prev ? { ...prev, hearts: res.hearts } : null);
+      setShowOutModal(false);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to refill hearts.");
+    } finally {
+      setIsRefilling(false);
+    }
+  };
+
   const handleFinish = async () => {
     if (completionData) {
       router.push("/");
@@ -185,6 +202,30 @@ export default function LessonPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-white font-sans text-gray-800">
+      {showOutModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-md p-8 text-center flex flex-col items-center">
+            <div className="text-6xl mb-6">💔</div>
+            <h2 className="text-3xl font-extrabold text-gray-800 mb-4">Out of Hearts!</h2>
+            <p className="text-gray-500 font-medium mb-8">You made too many mistakes. Refill your hearts to continue learning.</p>
+            
+            <button
+              onClick={handleRefill}
+              disabled={isRefilling}
+              className="w-full py-4 rounded-2xl font-bold text-white text-lg bg-blue-500 border-b-4 border-blue-600 active:border-b-0 active:translate-y-1 hover:bg-blue-400 transition-all mb-4 disabled:opacity-50"
+            >
+              {isRefilling ? "REFILLING..." : "REFILL HEARTS"}
+            </button>
+            <button
+              onClick={() => router.push('/')}
+              className="w-full py-4 rounded-2xl font-bold text-red-500 text-lg border-2 border-gray-200 active:bg-gray-50 transition-all"
+            >
+              END LESSON
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Top Header */}
       <header className="flex h-16 w-full items-center justify-between px-4 md:px-8 max-w-4xl mx-auto mt-4">
         <div className="flex items-center gap-4 flex-1">
