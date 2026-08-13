@@ -78,3 +78,11 @@ export const refillHearts = async (): Promise<{ success: boolean; hearts: number
   if (!res.ok) throw new Error('Failed to refill hearts');
   return res.json();
 };
+
+export const deductHeart = async (): Promise<{ success: boolean; hearts: number }> => {
+  const res = await fetch(`${API_URL}/progress/deduct-heart/`, {
+    method: 'POST',
+  });
+  if (!res.ok) throw new Error('Failed to deduct heart');
+  return res.json();
+};
