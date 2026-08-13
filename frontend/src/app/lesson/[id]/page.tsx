@@ -16,6 +16,7 @@ export default function LessonPage() {
 
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedWordIndices, setSelectedWordIndices] = useState<number[]>([]);
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
   const [isCompleting, setIsCompleting] = useState(false);
 
@@ -53,14 +54,28 @@ export default function LessonPage() {
   const progressPercent = (currentExerciseIndex / totalExercises) * 100;
 
   const handleCheck = async () => {
-    if (!currentExercise || status !== 'idle' || !selectedOption) return;
+    if (!currentExercise || status !== 'idle') return;
 
-    if (currentExercise.type !== 'multiple_choice') {
+    if (currentExercise.type !== 'multiple_choice' && currentExercise.type !== 'word_bank') {
       setStatus('correct');
       return;
     }
 
-    if (selectedOption === currentExercise.answer) {
+    let isCorrect = false;
+
+    if (currentExercise.type === 'multiple_choice') {
+      if (!selectedOption) return;
+      isCorrect = (selectedOption === currentExercise.answer);
+    } else if (currentExercise.type === 'word_bank') {
+      if (selectedWordIndices.length === 0) return;
+      const selectedStr = selectedWordIndices.map(i => currentExercise.options[i]).join(' ');
+      const correctAnswer = Array.isArray(currentExercise.answer) 
+        ? currentExercise.answer.join(' ') 
+        : String(currentExercise.answer);
+      isCorrect = (selectedStr.trim() === correctAnswer.trim());
+    }
+
+    if (isCorrect) {
       setStatus('correct');
     } else {
       setStatus('incorrect');
@@ -80,6 +95,7 @@ export default function LessonPage() {
     }
     setCurrentExerciseIndex(prev => prev + 1);
     setSelectedOption(null);
+    setSelectedWordIndices([]);
     setStatus('idle');
   };
 
@@ -150,6 +166,43 @@ export default function LessonPage() {
                   ))}
                 </div>
               </div>
+            ) : currentExercise.type === 'word_bank' ? (
+              <div className="w-full flex flex-col gap-8">
+                <h2 className="text-2xl font-bold mb-4">{currentExercise.question}</h2>
+                
+                {/* Answer Area (Selected Words) */}
+                <div className="flex flex-wrap gap-2 min-h-[60px] border-b-2 border-gray-300 pb-2">
+                  {selectedWordIndices.map((idx, orderPos) => (
+                    <button
+                      key={`sel-${idx}-${orderPos}`}
+                      onClick={() => status === 'idle' && setSelectedWordIndices(prev => prev.filter(i => i !== idx))}
+                      disabled={status !== 'idle'}
+                      className="px-4 py-2 rounded-xl border-2 border-gray-200 bg-white font-bold text-lg hover:bg-gray-50 transition-colors"
+                    >
+                      {currentExercise.options[idx]}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Available Words */}
+                <div className="flex flex-wrap gap-2 justify-center mt-8">
+                  {(currentExercise.options as string[]).map((word, idx) => {
+                    const isSelected = selectedWordIndices.includes(idx);
+                    return (
+                      <button
+                        key={`opt-${idx}`}
+                        onClick={() => status === 'idle' && setSelectedWordIndices(prev => [...prev, idx])}
+                        disabled={isSelected || status !== 'idle'}
+                        className={`px-4 py-2 rounded-xl border-2 font-bold text-lg transition-colors
+                          ${isSelected ? 'border-gray-200 bg-gray-200 text-gray-200 cursor-default' : 'border-gray-200 bg-white hover:bg-gray-50 active:translate-y-1'}
+                        `}
+                      >
+                        {word}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             ) : (
               <div className="w-full h-64 border-4 border-dashed border-gray-300 rounded-3xl flex flex-col items-center justify-center bg-gray-50 mb-8">
                 <p className="text-gray-500 font-bold mb-2">Unsupported Exercise Type: {currentExercise.type}</p>
@@ -181,7 +234,7 @@ export default function LessonPage() {
                 <div className="bg-white rounded-full p-2"><span className="text-2xl">❌</span></div>
                 <div className="flex flex-col">
                   <h2 className="text-2xl font-bold">Incorrect</h2>
-                  <p className="font-medium">Correct answer: {currentExercise?.answer}</p>
+                  <p className="font-medium">Correct answer: {Array.isArray(currentExercise?.answer) ? currentExercise?.answer.join(' ') : String(currentExercise?.answer)}</p>
                 </div>
               </div>
             )}
@@ -203,7 +256,10 @@ export default function LessonPage() {
               <button 
                 className="px-10 py-3 font-bold text-white bg-green-500 border-b-4 border-green-600 rounded-2xl active:border-b-0 active:translate-y-1 hover:bg-green-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:active:border-b-4 disabled:active:translate-y-0"
                 onClick={handleCheck}
-                disabled={!selectedOption && currentExercise?.type === 'multiple_choice'}
+                disabled={
+                  (currentExercise?.type === 'multiple_choice' && !selectedOption) ||
+                  (currentExercise?.type === 'word_bank' && selectedWordIndices.length === 0)
+                }
               >
                 CHECK
               </button>
