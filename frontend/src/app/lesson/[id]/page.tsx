@@ -207,13 +207,13 @@ export default function LessonPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white dark:bg-slate-900 font-sans text-gray-800 dark:text-gray-100">
+    <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
       {showOutModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md p-8 text-center flex flex-col items-center shadow-xl border border-gray-200 dark:border-slate-800">
+          <div className="bg-card rounded-3xl w-full max-w-md p-8 text-center flex flex-col items-center shadow-xl border border-border">
             <Heart className="w-16 h-16 mb-6 text-red-500 fill-current opacity-80" />
-            <h2 className="text-3xl font-extrabold text-gray-900 dark:text-gray-50 mb-4 tracking-tight">Out of Hearts!</h2>
-            <p className="text-gray-500 dark:text-gray-400 font-medium mb-8">You made too many mistakes. Refill your hearts to continue learning.</p>
+            <h2 className="text-3xl font-extrabold text-foreground mb-4 tracking-tight">Out of Hearts!</h2>
+            <p className="text-muted-foreground font-medium mb-8">You made too many mistakes. Refill your hearts to continue learning.</p>
             
             <button
               onClick={handleRefill}
@@ -224,7 +224,7 @@ export default function LessonPage() {
             </button>
             <button
               onClick={() => router.push('/')}
-              className="w-full py-4 rounded-2xl font-bold text-red-500 text-lg border-2 border-gray-200 dark:border-slate-700 active:bg-gray-50 transition-all"
+              className="w-full py-4 rounded-2xl font-bold text-red-500 text-lg border-2 border-border active:bg-muted transition-all"
             >
               END LESSON
             </button>

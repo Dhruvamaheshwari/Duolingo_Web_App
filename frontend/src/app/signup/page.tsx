@@ -37,16 +37,16 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a192f] text-gray-100 font-sans p-4">
-      <div className="w-full max-w-md bg-[#112240] rounded-3xl border border-gray-700 shadow-xl p-8">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground font-sans p-4">
+      <div className="w-full max-w-md bg-card rounded-3xl border border-border shadow-xl p-8">
         <div className="flex justify-center mb-8">
           <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center border border-emerald-500/30">
             <UserPlus className="w-8 h-8" />
           </div>
         </div>
         
-        <h1 className="text-3xl font-extrabold text-center mb-2 tracking-tight text-white">Create Account</h1>
-        <p className="text-center text-gray-400 mb-8 font-medium">Start your language learning journey today.</p>
+        <h1 className="text-3xl font-extrabold text-center mb-2 tracking-tight text-foreground">Create Account</h1>
+        <p className="text-center text-muted-foreground mb-8 font-medium">Start your language learning journey today.</p>
 
         {error && (
           <div className="mb-6 p-4 bg-red-900/30 border border-red-800 rounded-2xl text-red-400 text-sm font-medium text-center">
@@ -56,49 +56,49 @@ export default function SignupPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-bold text-gray-300 uppercase tracking-wide">Name</label>
+            <label className="text-sm font-bold text-muted-foreground uppercase tracking-wide">Name</label>
             <input 
               type="text" 
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-[#0a192f] border-2 border-gray-700 rounded-2xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white font-medium transition-colors"
+              className="w-full bg-background border-2 border-border rounded-2xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-foreground font-medium transition-colors"
               placeholder="Enter your name"
             />
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-bold text-gray-300 uppercase tracking-wide">Email</label>
+            <label className="text-sm font-bold text-muted-foreground uppercase tracking-wide">Email</label>
             <input 
               type="email" 
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-[#0a192f] border-2 border-gray-700 rounded-2xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white font-medium transition-colors"
+              className="w-full bg-background border-2 border-border rounded-2xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-foreground font-medium transition-colors"
               placeholder="Enter your email"
             />
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-bold text-gray-300 uppercase tracking-wide">Password</label>
+            <label className="text-sm font-bold text-muted-foreground uppercase tracking-wide">Password</label>
             <input 
               type="password" 
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-[#0a192f] border-2 border-gray-700 rounded-2xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white font-medium transition-colors"
+              className="w-full bg-background border-2 border-border rounded-2xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-foreground font-medium transition-colors"
               placeholder="Create a password"
             />
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-bold text-gray-300 uppercase tracking-wide">Confirm Password</label>
+            <label className="text-sm font-bold text-muted-foreground uppercase tracking-wide">Confirm Password</label>
             <input 
               type="password" 
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full bg-[#0a192f] border-2 border-gray-700 rounded-2xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-white font-medium transition-colors"
+              className="w-full bg-background border-2 border-border rounded-2xl px-4 py-3 focus:outline-none focus:border-indigo-500 text-foreground font-medium transition-colors"
               placeholder="Confirm your password"
             />
           </div>
@@ -112,7 +112,7 @@ export default function SignupPage() {
           </button>
         </form>
 
-        <p className="mt-8 text-center text-gray-400 font-medium">
+        <p className="mt-8 text-center text-muted-foreground font-medium">
           Already have an account?{" "}
           <Link href="/login" className="text-emerald-400 font-bold hover:text-emerald-300 transition-colors">
             Log in
