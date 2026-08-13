@@ -44,9 +44,9 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#f7f9fa] font-sans text-gray-800 dark:text-gray-100">
+    <div className="flex min-h-screen flex-col bg-[#f7f9fa] dark:bg-slate-900 font-sans text-gray-800 dark:text-gray-100">
       {/* Top Header */}
-      <header className="sticky top-0 z-10 flex h-16 w-full items-center justify-between border-b border-gray-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 md:px-8">
+      <header className="sticky top-0 z-10 flex h-16 w-full items-center justify-between border-b border-gray-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md pl-4 md:pl-8 pr-24 md:pr-28">
         <Link href="/" className="text-2xl font-extrabold tracking-tight text-indigo-600 dark:text-indigo-400 hover:opacity-80 transition-opacity">
           LingoClone
         </Link>
