@@ -139,9 +139,9 @@ export default function Home() {
                     )}
                     <button
                       disabled={isLocked}
-                      className={`relative flex h-20 w-20 items-center justify-center rounded-full border-b-8 ${bgColor} ${borderColor} transition-transform active:translate-y-1 active:border-b-0 disabled:active:translate-y-0 disabled:active:border-b-8`}
+                      className={`relative flex h-20 w-20 items-center justify-center rounded-full border-b-8 ${bgColor} ${borderColor} transition-all hover:brightness-110 active:translate-y-2 active:border-b-0 disabled:hover:brightness-100 disabled:active:translate-y-0 disabled:active:border-b-8`}
                     >
-                      <span className={`text-2xl ${textColor}`}>
+                      <span className={`text-3xl drop-shadow-md ${textColor}`}>
                         {isCompleted ? "⭐" : isLocked ? "🔒" : "📖"}
                       </span>
                     </button>
