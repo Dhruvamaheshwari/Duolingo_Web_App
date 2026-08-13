@@ -8,6 +8,7 @@ export interface Skill {
   xp_reward: number;
   progress: number;
   state: 'locked' | 'available' | 'completed';
+  first_lesson_id: number | null;
 }
 
 export interface Unit {
@@ -43,7 +44,8 @@ export interface Lesson {
   title: string;
   position: number;
   skill: number;
-  exercises?: Record<string, unknown>[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  exercises?: any[];
 }
 
 export interface LeaderboardEntry {

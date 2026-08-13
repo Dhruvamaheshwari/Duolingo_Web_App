@@ -6,10 +6,11 @@ from django.contrib.auth.models import User
 class SkillSerializer(serializers.ModelSerializer):
     progress = serializers.SerializerMethodField()
     state = serializers.SerializerMethodField()
+    first_lesson_id = serializers.SerializerMethodField()
 
     class Meta:
         model = Skill
-        fields = ['id', 'title', 'description', 'position', 'xp_reward', 'progress', 'state']
+        fields = ['id', 'title', 'description', 'position', 'xp_reward', 'progress', 'state', 'first_lesson_id']
 
     def get_progress(self, obj):
         request = self.context.get('request')
@@ -45,6 +46,10 @@ class SkillSerializer(serializers.ModelSerializer):
             
             return 'locked'
         return 'locked'
+
+    def get_first_lesson_id(self, obj):
+        first_lesson = obj.lessons.order_by('position').first()
+        return first_lesson.id if first_lesson else None
 
 class UnitSerializer(serializers.ModelSerializer):
     skills = SkillSerializer(many=True, read_only=True)

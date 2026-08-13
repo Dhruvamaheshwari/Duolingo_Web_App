@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { getLearningPath, getLearnerProgress, Course, LearnerProgress } from "@/lib/api";
 
 export default function Home() {
+  const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
   const [progress, setProgress] = useState<LearnerProgress | null>(null);
   const [loading, setLoading] = useState(true);
@@ -138,7 +140,12 @@ export default function Home() {
                       </div>
                     )}
                     <button
-                      disabled={isLocked}
+                      disabled={isLocked || !skill.first_lesson_id}
+                      onClick={() => {
+                        if (skill.first_lesson_id) {
+                          router.push(`/lesson/${skill.first_lesson_id}`);
+                        }
+                      }}
                       className={`relative flex h-20 w-20 items-center justify-center rounded-full border-b-8 ${bgColor} ${borderColor} transition-all hover:brightness-110 active:translate-y-2 active:border-b-0 disabled:hover:brightness-100 disabled:active:translate-y-0 disabled:active:border-b-8`}
                     >
                       <span className={`text-3xl drop-shadow-md ${textColor}`}>
