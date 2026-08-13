@@ -23,6 +23,7 @@ export default function LessonPage() {
   const [wrongPair, setWrongPair] = useState<string[]>([]);
   const [status, setStatus] = useState<'idle' | 'correct' | 'incorrect'>('idle');
   const [isCompleting, setIsCompleting] = useState(false);
+  const [completionData, setCompletionData] = useState<{ xp_earned?: number; new_total_xp?: number; new_streak?: number } | null>(null);
 
   useEffect(() => {
     const currentExercise = lesson?.exercises?.[currentExerciseIndex];
@@ -67,7 +68,7 @@ export default function LessonPage() {
   const exercises = lesson.exercises || [];
   const currentExercise = exercises[currentExerciseIndex];
   const totalExercises = exercises.length || 1;
-  const progressPercent = (currentExerciseIndex / totalExercises) * 100;
+  const progressPercent = completionData ? 100 : (currentExerciseIndex / totalExercises) * 100;
 
   const handleCheck = async () => {
     if (!currentExercise || status !== 'idle') return;
@@ -166,13 +167,18 @@ export default function LessonPage() {
   };
 
   const handleFinish = async () => {
+    if (completionData) {
+      router.push("/");
+      return;
+    }
     setIsCompleting(true);
     try {
-      await completeLesson(lesson.id);
-      router.push("/");
+      const res = await completeLesson(lesson.id);
+      setCompletionData(res);
     } catch (err) {
       console.error(err);
-      alert("Failed to complete lesson. Ensure it is unlocked.");
+      alert("Failed to complete lesson. Ensure it is unlocked or not already completed.");
+    } finally {
       setIsCompleting(false);
     }
   };
@@ -362,9 +368,33 @@ export default function LessonPage() {
               </div>
             )
           ) : (
-            <div className="w-full h-64 flex flex-col items-center justify-center">
-              <h2 className="text-3xl font-bold text-green-500">Lesson Complete!</h2>
-              <p className="text-gray-500 mt-4">Click Finish to complete.</p>
+            <div className="w-full h-full flex flex-col items-center justify-center animate-fade-in text-center mt-12">
+              {completionData ? (
+                <>
+                  <div className="bg-yellow-400 w-32 h-32 rounded-full flex items-center justify-center mb-8 shadow-xl">
+                    <span className="text-6xl">🏆</span>
+                  </div>
+                  <h2 className="text-4xl font-extrabold text-yellow-500 mb-6">Lesson Complete!</h2>
+                  
+                  <div className="flex gap-6 mb-12 w-full max-w-md">
+                    <div className="flex-1 bg-yellow-100 border-2 border-yellow-400 rounded-2xl p-4 flex flex-col items-center">
+                      <span className="text-sm font-bold text-yellow-600 uppercase tracking-widest mb-2">Total XP</span>
+                      <span className="text-3xl font-extrabold text-yellow-500">{completionData.new_total_xp}</span>
+                      <span className="text-sm font-bold text-yellow-500 mt-1">+{completionData.xp_earned} Earned</span>
+                    </div>
+                    <div className="flex-1 bg-orange-100 border-2 border-orange-400 rounded-2xl p-4 flex flex-col items-center">
+                      <span className="text-sm font-bold text-orange-600 uppercase tracking-widest mb-2">Streak</span>
+                      <span className="text-3xl font-extrabold text-orange-500">{completionData.new_streak}</span>
+                      <span className="text-sm font-bold text-orange-500 mt-1">Days</span>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-3xl font-bold text-green-500">You did it!</h2>
+                  <p className="text-gray-500 mt-4">Click Finish to complete your lesson and claim your XP.</p>
+                </>
+              )}
             </div>
           )}
 
@@ -374,48 +404,59 @@ export default function LessonPage() {
       {/* Bottom Footer Area */}
       <footer className={`border-t-2 p-4 transition-colors duration-300 ${status === 'correct' ? 'bg-green-100 border-green-200' : status === 'incorrect' ? 'bg-red-100 border-red-200' : 'bg-white border-gray-200'}`}>
         <div className="max-w-4xl mx-auto flex justify-between items-center min-h-[80px]">
-          <div className="flex-1">
-            {status === 'correct' && (
-              <div className="flex items-center gap-4 text-green-600">
-                <div className="bg-white rounded-full p-2"><span className="text-2xl">✔️</span></div>
-                <h2 className="text-2xl font-bold">Good job!</h2>
+          {completionData ? (
+            <button 
+              className="w-full px-10 py-4 font-bold text-white bg-blue-500 border-b-4 border-blue-600 rounded-2xl active:border-b-0 active:translate-y-1 hover:bg-blue-400 transition-all text-xl disabled:opacity-50"
+              onClick={handleFinish}
+            >
+              RETURN TO PATH
+            </button>
+          ) : (
+            <>
+              <div className="flex-1">
+                {status === 'correct' && (
+                  <div className="flex items-center gap-4 text-green-600">
+                    <div className="bg-white rounded-full p-2"><span className="text-2xl">✔️</span></div>
+                    <h2 className="text-2xl font-bold">Good job!</h2>
+                  </div>
+                )}
+                {status === 'incorrect' && (
+                  <div className="flex items-center gap-4 text-red-500">
+                    <div className="bg-white rounded-full p-2"><span className="text-2xl">❌</span></div>
+                    <div className="flex flex-col">
+                      <h2 className="text-2xl font-bold">Incorrect</h2>
+                      <p className="font-medium">
+                        {currentExercise?.type === 'match_pairs' 
+                          ? 'That pair does not match.' 
+                          : `Correct answer: ${Array.isArray(currentExercise?.answer) ? currentExercise?.answer.join(' ') : String(currentExercise?.answer)}`
+                        }
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {progress && progress.hearts <= 0 && status === 'incorrect' && (
+                   <p className="text-red-600 font-bold mt-1">Out of hearts! You must exit.</p>
+                )}
               </div>
-            )}
-            {status === 'incorrect' && (
-              <div className="flex items-center gap-4 text-red-500">
-                <div className="bg-white rounded-full p-2"><span className="text-2xl">❌</span></div>
-                <div className="flex flex-col">
-                  <h2 className="text-2xl font-bold">Incorrect</h2>
-                  <p className="font-medium">
-                    {currentExercise?.type === 'match_pairs' 
-                      ? 'That pair does not match.' 
-                      : `Correct answer: ${Array.isArray(currentExercise?.answer) ? currentExercise?.answer.join(' ') : String(currentExercise?.answer)}`
-                    }
-                  </p>
-                </div>
-              </div>
-            )}
-            {progress && progress.hearts <= 0 && status === 'incorrect' && (
-               <p className="text-red-600 font-bold mt-1">Out of hearts! You must exit.</p>
-            )}
-          </div>
 
-          <div className="flex gap-4">
-            {!currentExercise ? (
-              <button 
-                className="px-10 py-3 font-bold text-white bg-green-500 border-b-4 border-green-600 rounded-2xl active:border-b-0 active:translate-y-1 hover:bg-green-400 transition-all disabled:opacity-50"
-                onClick={handleFinish}
-                disabled={isCompleting}
-              >
-                FINISH
-              </button>
-            ) : status === 'idle' ? (
-              <button 
-                className="px-10 py-3 font-bold text-white bg-green-500 border-b-4 border-green-600 rounded-2xl active:border-b-0 active:translate-y-1 hover:bg-green-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:active:border-b-4 disabled:active:translate-y-0"
-                onClick={handleCheck}
-                disabled={
-                  ((currentExercise?.type === 'multiple_choice' || currentExercise?.type === 'fill_blank' || currentExercise?.type === 'type_answer') && (!selectedOption || selectedOption.trim() === '')) ||
-                  (currentExercise?.type === 'word_bank' && selectedWordIndices.length === 0) ||
+              <div className="flex gap-4">
+                {!currentExercise ? (
+                  <button 
+                    className="px-10 py-3 font-bold text-white bg-green-500 border-b-4 border-green-600 rounded-2xl active:border-b-0 active:translate-y-1 hover:bg-green-400 transition-all disabled:opacity-50"
+                    onClick={handleFinish}
+                    disabled={isCompleting}
+                  >
+                    {isCompleting ? 'SAVING...' : 'FINISH'}
+                  </button>
+                ) : status === 'idle' ? (
+                  <button 
+                    className="px-10 py-3 font-bold text-white bg-green-500 border-b-4 border-green-600 rounded-2xl active:border-b-0 active:translate-y-1 hover:bg-green-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:active:border-b-4 disabled:active:translate-y-0"
+                    onClick={handleCheck}
+                    disabled={
+                      ((currentExercise?.type === 'multiple_choice' || currentExercise?.type === 'fill_blank' || currentExercise?.type === 'type_answer') && (!selectedOption || selectedOption.trim() === '')) ||
+                      (currentExercise?.type === 'word_bank' && selectedWordIndices.length === 0) ||
+                      (currentExercise?.type === 'match_pairs')
+                    }
                   (currentExercise?.type === 'match_pairs')
                 }
               >

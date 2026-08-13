@@ -63,7 +63,13 @@ export const getLearnerProgress = async (): Promise<LearnerProgress> => {
   return res.json();
 };
 
-export const completeLesson = async (id: number): Promise<{ success: boolean; skill_progress_percent: number }> => {
+export const completeLesson = async (id: number): Promise<{ 
+  success: boolean; 
+  skill_progress_percent: number;
+  xp_earned?: number;
+  new_total_xp?: number;
+  new_streak?: number;
+}> => {
   const res = await fetch(`${API_URL}/lessons/${id}/complete/`, {
     method: 'POST',
   });
