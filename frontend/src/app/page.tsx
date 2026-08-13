@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getLearningPath, getLearnerProgress, Course, LearnerProgress } from "@/lib/api";
+import { Flame, Zap, Heart, Trophy, Target, Star, Lock, BookOpen } from "lucide-react";
 
 export default function Home() {
   const router = useRouter();
@@ -43,28 +44,28 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-[#f7f9fa] dark:bg-slate-900 font-sans text-gray-800 dark:text-gray-200">
       {/* Top Bar / Stats */}
-      <header className="sticky top-0 z-10 flex h-16 w-full items-center justify-between border-b-2 border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 md:px-8">
-        <Link href="/" className="text-2xl font-extrabold text-green-500 hover:text-green-400 transition-colors">
+      <header className="sticky top-0 z-10 flex h-16 w-full items-center justify-between border-b border-gray-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 md:px-8">
+        <Link href="/" className="text-2xl font-extrabold tracking-tight text-indigo-600 dark:text-indigo-400 hover:opacity-80 transition-opacity">
           LingoClone
         </Link>
-        <div className="flex items-center gap-6 font-bold text-gray-500">
+        <div className="flex items-center gap-6 font-semibold text-gray-600 dark:text-gray-400">
           <div className="flex items-center gap-2">
-            <span className="text-orange-500">🔥</span>
+            <Flame className={`w-5 h-5 ${progress.current_streak > 0 ? "text-orange-500" : "text-gray-400"}`} />
             <span className={progress.current_streak > 0 ? "text-orange-500" : ""}>{progress.current_streak}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-blue-500">⚡</span>
+          <div className="flex items-center gap-2 text-blue-500">
+            <Zap className="w-5 h-5" />
             <span>{progress.total_xp} XP</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-red-500">❤️</span>
-            <span className="text-red-500">{progress.hearts}</span>
+          <div className="flex items-center gap-2 text-red-500">
+            <Heart className="w-5 h-5" />
+            <span>{progress.hearts}</span>
           </div>
-          <Link href="/leaderboard" className="ml-2 hover:text-gray-800 dark:hover:text-gray-300 transition-colors flex items-center gap-2">
-            🏆 LEADERBOARD
+          <Link href="/leaderboard" className="ml-2 hover:text-gray-900 dark:hover:text-gray-200 transition-colors flex items-center gap-2">
+            <Trophy className="w-5 h-5" /> LEADERBOARD
           </Link>
-          <Link href="/profile" className="ml-4 hover:text-gray-800 dark:hover:text-gray-300 transition-colors flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-sm">
+          <Link href="/profile" className="ml-4 hover:text-gray-900 dark:hover:text-gray-200 transition-colors flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-sm font-bold ring-2 ring-indigo-500/20">
               {progress.username ? progress.username.charAt(0).toUpperCase() : 'U'}
             </div>
             PROFILE
@@ -76,33 +77,35 @@ export default function Home() {
       <main className="mx-auto flex w-full max-w-2xl flex-col items-center py-10 px-4">
         
         {/* Daily XP Goal Widget */}
-        <div className="w-full mb-10 rounded-2xl border-2 border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+        {/* Daily XP Goal Widget */}
+        <div className="w-full mb-10 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold text-gray-700 dark:text-gray-200 text-xl flex items-center gap-2">
-              <span className="text-2xl">🎯</span> Daily Quest
+            <h3 className="font-bold text-gray-800 dark:text-gray-100 text-lg flex items-center gap-2">
+              <Target className="w-5 h-5 text-indigo-500" /> Daily Quest
             </h3>
-            <span className="font-bold text-gray-500">
+            <span className="font-medium text-gray-500 dark:text-gray-400 text-sm">
               {progress.daily_xp} / {progress.daily_goal} XP
             </span>
           </div>
           
-          <div className="h-4 w-full bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
+          <div className="h-3 w-full bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
             <div 
-              className={`h-full rounded-full transition-all duration-500 ${progress.daily_xp >= progress.daily_goal ? 'bg-green-500' : 'bg-yellow-400'}`}
+              className={`h-full rounded-full transition-all duration-500 ${progress.daily_xp >= progress.daily_goal ? 'bg-green-500' : 'bg-indigo-500'}`}
               style={{ width: `${Math.min((progress.daily_xp / progress.daily_goal) * 100, 100)}%` }}
             />
           </div>
           {progress.daily_xp >= progress.daily_goal && (
-            <p className="mt-4 text-center font-bold text-green-500 animate-pulse">You met your daily goal!</p>
+            <p className="mt-4 text-center font-medium text-green-600 dark:text-green-400 text-sm">You met your daily goal!</p>
           )}
         </div>
 
         {course.units.map((unit) => (
           <div key={unit.id} className="mb-12 w-full">
             {/* Unit Header */}
-            <div className="mb-8 rounded-2xl bg-green-500 p-6 text-white shadow-sm">
-              <h2 className="text-2xl font-bold">Unit {unit.position}</h2>
-              <p className="text-green-100">{unit.title} - {unit.description}</p>
+            {/* Unit Header */}
+            <div className="mb-10 rounded-3xl bg-gradient-to-br from-indigo-500 to-purple-600 p-8 text-white shadow-md">
+              <h2 className="text-2xl font-extrabold tracking-tight mb-2">Unit {unit.position}</h2>
+              <p className="text-indigo-100 font-medium text-lg">{unit.title} <span className="opacity-75 px-2">•</span> {unit.description}</p>
             </div>
 
             {/* Skills / Path */}
@@ -113,17 +116,17 @@ export default function Home() {
                 const isCompleted = skill.state === 'completed';
                 const isAvailable = skill.state === 'available';
                 
-                let bgColor = "bg-gray-200 dark:bg-slate-700";
-                let borderColor = "border-gray-300 dark:border-slate-600";
+                let bgColor = "bg-gray-100 dark:bg-slate-800";
+                let borderColor = "border-gray-200 dark:border-slate-700";
                 let textColor = "text-gray-400 dark:text-gray-500";
                 
                 if (isCompleted) {
-                  bgColor = "bg-yellow-400";
-                  borderColor = "border-yellow-500";
-                  textColor = "text-white";
+                  bgColor = "bg-amber-400 dark:bg-amber-500";
+                  borderColor = "border-amber-500 dark:border-amber-600";
+                  textColor = "text-amber-50";
                 } else if (isAvailable) {
-                  bgColor = "bg-green-500";
-                  borderColor = "border-green-600";
+                  bgColor = "bg-indigo-500";
+                  borderColor = "border-indigo-600";
                   textColor = "text-white";
                 }
 
@@ -135,7 +138,7 @@ export default function Home() {
                   >
                     {/* Crown / Progress indicator if available or completed */}
                     {isAvailable && (
-                      <div className="absolute -top-6 text-sm font-bold text-green-500">
+                      <div className="absolute -top-6 text-xs font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded-full ring-1 ring-indigo-200 dark:ring-indigo-800">
                         {skill.progress}%
                       </div>
                     )}
@@ -146,10 +149,10 @@ export default function Home() {
                           router.push(`/lesson/${skill.first_lesson_id}`);
                         }
                       }}
-                      className={`relative flex h-20 w-20 items-center justify-center rounded-full border-b-8 ${bgColor} ${borderColor} transition-all hover:brightness-110 active:translate-y-2 active:border-b-0 disabled:hover:brightness-100 disabled:active:translate-y-0 disabled:active:border-b-8`}
+                      className={`relative flex h-[72px] w-[72px] items-center justify-center rounded-full border-b-[6px] ${bgColor} ${borderColor} transition-all hover:brightness-110 active:translate-y-1.5 active:border-b-0 disabled:hover:brightness-100 disabled:active:translate-y-0 disabled:active:border-b-[6px] shadow-sm`}
                     >
-                      <span className={`text-3xl drop-shadow-md ${textColor}`}>
-                        {isCompleted ? "⭐" : isLocked ? "🔒" : "📖"}
+                      <span className={`flex items-center justify-center ${textColor}`}>
+                        {isCompleted ? <Star className="w-8 h-8 fill-current" /> : isLocked ? <Lock className="w-7 h-7" /> : <BookOpen className="w-7 h-7" />}
                       </span>
                     </button>
                     <span className="mt-4 text-center font-bold text-gray-500 dark:text-gray-400">

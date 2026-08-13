@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getLesson, getLearnerProgress, completeLesson, deductHeart, refillHearts, Lesson, LearnerProgress } from "@/lib/api";
+import { Heart, Trophy, CheckCircle2, XCircle, X } from "lucide-react";
 
 export default function LessonPage() {
   const params = useParams();
@@ -205,9 +206,9 @@ export default function LessonPage() {
     <div className="flex min-h-screen flex-col bg-white dark:bg-slate-900 font-sans text-gray-800 dark:text-gray-100">
       {showOutModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md p-8 text-center flex flex-col items-center">
-            <div className="text-6xl mb-6">💔</div>
-            <h2 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100 mb-4">Out of Hearts!</h2>
+          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md p-8 text-center flex flex-col items-center shadow-xl border border-gray-200 dark:border-slate-800">
+            <Heart className="w-16 h-16 mb-6 text-red-500 fill-current opacity-80" />
+            <h2 className="text-3xl font-extrabold text-gray-900 dark:text-gray-50 mb-4 tracking-tight">Out of Hearts!</h2>
             <p className="text-gray-500 dark:text-gray-400 font-medium mb-8">You made too many mistakes. Refill your hearts to continue learning.</p>
             
             <button
@@ -230,24 +231,20 @@ export default function LessonPage() {
       {/* Top Header */}
       <header className="flex h-16 w-full items-center justify-between px-4 md:px-8 max-w-4xl mx-auto mt-4">
         <div className="flex items-center gap-4 flex-1">
-          <Link href="/" className="text-gray-400 hover:text-gray-600 text-3xl font-bold p-2 cursor-pointer transition-colors">
-            ✕
+          <Link href="/" className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-2 cursor-pointer transition-colors">
+            <X className="w-6 h-6" />
           </Link>
           
-          <div className="h-4 flex-1 rounded-full bg-gray-200 dark:bg-slate-700 overflow-hidden relative">
+          <div className="h-3 flex-1 rounded-full bg-gray-100 dark:bg-slate-800 overflow-hidden relative">
             <div 
-              className="h-full bg-green-500 transition-all duration-300 ease-in-out" 
+              className="h-full bg-indigo-500 transition-all duration-300 ease-in-out" 
               style={{ width: `${progressPercent}%` }}
-            />
-            <div 
-              className="absolute top-1 left-2 h-1 rounded-full bg-white dark:bg-slate-900 opacity-20 transition-all duration-300"
-              style={{ width: `calc(${progressPercent}% - 16px)` }}
             />
           </div>
         </div>
 
         <div className="flex items-center gap-2 ml-6 font-bold text-red-500 text-xl">
-          <span>❤️</span>
+          <Heart className="w-5 h-5 fill-current" />
           <span>{progress.hearts}</span>
         </div>
       </header>
@@ -413,21 +410,21 @@ export default function LessonPage() {
             <div className="w-full h-full flex flex-col items-center justify-center animate-fade-in text-center mt-12">
               {completionData ? (
                 <>
-                  <div className="bg-yellow-400 w-32 h-32 rounded-full flex items-center justify-center mb-8 shadow-xl">
-                    <span className="text-6xl">🏆</span>
+                  <div className="bg-amber-100 dark:bg-amber-900/30 p-8 rounded-full flex items-center justify-center mb-8">
+                    <Trophy className="w-16 h-16 text-amber-500" />
                   </div>
-                  <h2 className="text-4xl font-extrabold text-yellow-500 mb-6">Lesson Complete!</h2>
+                  <h2 className="text-4xl font-extrabold text-gray-900 dark:text-gray-50 mb-6 tracking-tight">Lesson Complete!</h2>
                   
                   <div className="flex gap-6 mb-12 w-full max-w-md">
-                    <div className="flex-1 bg-yellow-100 border-2 border-yellow-400 rounded-2xl p-4 flex flex-col items-center">
-                      <span className="text-sm font-bold text-yellow-600 uppercase tracking-widest mb-2">Total XP</span>
-                      <span className="text-3xl font-extrabold text-yellow-500">{completionData.new_total_xp}</span>
-                      <span className="text-sm font-bold text-yellow-500 mt-1">+{completionData.xp_earned} Earned</span>
+                    <div className="flex-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 shadow-sm rounded-2xl p-6 flex flex-col items-center">
+                      <span className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2">Total XP</span>
+                      <span className="text-3xl font-extrabold text-blue-500">{completionData.new_total_xp}</span>
+                      <span className="text-sm font-semibold text-green-500 dark:text-green-400 mt-1">+{completionData.xp_earned} Earned</span>
                     </div>
-                    <div className="flex-1 bg-orange-100 border-2 border-orange-400 rounded-2xl p-4 flex flex-col items-center">
-                      <span className="text-sm font-bold text-orange-600 uppercase tracking-widest mb-2">Streak</span>
+                    <div className="flex-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 shadow-sm rounded-2xl p-6 flex flex-col items-center">
+                      <span className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2">Streak</span>
                       <span className="text-3xl font-extrabold text-orange-500">{completionData.new_streak}</span>
-                      <span className="text-sm font-bold text-orange-500 mt-1">Days</span>
+                      <span className="text-sm font-semibold text-gray-400 mt-1">Days</span>
                     </div>
                   </div>
                 </>
@@ -444,7 +441,7 @@ export default function LessonPage() {
       </main>
 
       {/* Bottom Footer Area */}
-      <footer className={`border-t-2 p-4 transition-colors duration-300 ${status === 'correct' ? 'bg-green-100 border-green-200' : status === 'incorrect' ? 'bg-red-100 border-red-200' : 'bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-700'}`}>
+      <footer className={`border-t p-4 transition-colors duration-300 ${status === 'correct' ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800' : status === 'incorrect' ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800' : 'bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800'}`}>
         <div className="max-w-4xl mx-auto flex justify-between items-center min-h-[80px]">
           {completionData ? (
             <button 
@@ -457,14 +454,14 @@ export default function LessonPage() {
             <>
               <div className="flex-1">
                 {status === 'correct' && (
-                  <div className="flex items-center gap-4 text-green-600">
-                    <div className="bg-white dark:bg-slate-900 rounded-full p-2"><span className="text-2xl">✔️</span></div>
-                    <h2 className="text-2xl font-bold">Good job!</h2>
+                  <div className="flex items-center gap-4 text-emerald-600 dark:text-emerald-400">
+                    <div className="bg-white dark:bg-slate-900 rounded-full p-2"><CheckCircle2 className="w-8 h-8" /></div>
+                    <h2 className="text-2xl font-bold tracking-tight">Good job!</h2>
                   </div>
                 )}
                 {status === 'incorrect' && (
                   <div className="flex items-center gap-4 text-red-500">
-                    <div className="bg-white dark:bg-slate-900 rounded-full p-2"><span className="text-2xl">❌</span></div>
+                    <div className="bg-white dark:bg-slate-900 rounded-full p-2"><XCircle className="w-8 h-8" /></div>
                     <div className="flex flex-col">
                       <h2 className="text-2xl font-bold">Incorrect</h2>
                       <p className="font-medium">
@@ -484,7 +481,7 @@ export default function LessonPage() {
               <div className="flex gap-4">
                 {!currentExercise ? (
                   <button 
-                    className="px-10 py-3 font-bold text-white bg-green-500 border-b-4 border-green-600 rounded-2xl active:border-b-0 active:translate-y-1 hover:bg-green-400 transition-all disabled:opacity-50"
+                    className="px-10 py-3 font-bold text-white bg-indigo-500 border-b-4 border-indigo-600 rounded-2xl active:border-b-0 active:translate-y-1 hover:bg-indigo-400 transition-all disabled:opacity-50"
                     onClick={handleFinish}
                     disabled={isCompleting}
                   >
@@ -492,7 +489,7 @@ export default function LessonPage() {
                   </button>
                 ) : status === 'idle' ? (
                   <button 
-                    className="px-10 py-3 font-bold text-white bg-green-500 border-b-4 border-green-600 rounded-2xl active:border-b-0 active:translate-y-1 hover:bg-green-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:active:border-b-4 disabled:active:translate-y-0"
+                    className="px-10 py-3 font-bold text-white bg-indigo-500 border-b-4 border-indigo-600 rounded-2xl active:border-b-0 active:translate-y-1 hover:bg-indigo-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:active:border-b-4 disabled:active:translate-y-0"
                     onClick={handleCheck}
                     disabled={
                       ((currentExercise?.type === 'multiple_choice' || currentExercise?.type === 'fill_blank' || currentExercise?.type === 'type_answer') && (!selectedOption || selectedOption.trim() === '')) ||
@@ -505,7 +502,7 @@ export default function LessonPage() {
             ) : (
               <button 
                 className={`px-10 py-3 font-bold text-white border-b-4 rounded-2xl active:border-b-0 active:translate-y-1 transition-all
-                  ${status === 'correct' ? 'bg-green-500 border-green-600 hover:bg-green-400' : 'bg-red-500 border-red-600 hover:bg-red-400'}
+                  ${status === 'correct' ? 'bg-emerald-500 border-emerald-600 hover:bg-emerald-400' : 'bg-red-500 border-red-600 hover:bg-red-400'}
                 `}
                 onClick={handleNext}
               >
