@@ -269,10 +269,10 @@ export default function LessonPage() {
                       disabled={status !== 'idle'}
                       className={`
                         w-full p-4 rounded-2xl border-2 border-b-4 text-left font-bold text-lg transition-all active:border-b-0 active:translate-y-1
-                        ${selectedOption === opt && status === 'idle' ? 'border-blue-400 bg-blue-50 text-blue-500' : ''}
-                        ${selectedOption !== opt && status === 'idle' ? 'border-gray-200 dark:border-slate-700 hover:bg-gray-50' : ''}
-                        ${selectedOption === opt && status === 'correct' ? 'border-green-500 bg-green-100 text-green-600' : ''}
-                        ${selectedOption === opt && status === 'incorrect' ? 'border-red-500 bg-red-100 text-red-600' : ''}
+                        ${selectedOption === opt && status === 'idle' ? 'border-blue-400 bg-blue-50 text-blue-500 dark:border-blue-500 dark:bg-blue-900/30 dark:text-blue-400' : ''}
+                        ${selectedOption !== opt && status === 'idle' ? 'border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800' : ''}
+                        ${selectedOption === opt && status === 'correct' ? 'border-green-500 bg-green-100 text-green-600 dark:border-green-500 dark:bg-green-900/30 dark:text-green-400' : ''}
+                        ${selectedOption === opt && status === 'incorrect' ? 'border-red-500 bg-red-100 text-red-600 dark:border-red-500 dark:bg-red-900/30 dark:text-red-400' : ''}
                         ${selectedOption !== opt && status !== 'idle' ? 'border-gray-200 dark:border-slate-700 opacity-50' : ''}
                       `}
                     >
@@ -292,7 +292,7 @@ export default function LessonPage() {
                       key={`sel-${idx}-${orderPos}`}
                       onClick={() => status === 'idle' && setSelectedWordIndices(prev => prev.filter(i => i !== idx))}
                       disabled={status !== 'idle'}
-                      className="px-4 py-2 rounded-2xl border-2 border-b-4 border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-lg hover:bg-gray-50 transition-all active:border-b-0 active:translate-y-1"
+                      className="px-4 py-2 rounded-2xl border-2 border-b-4 border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition-all active:border-b-0 active:translate-y-1"
                     >
                       {currentExercise.options[idx]}
                     </button>
@@ -309,7 +309,7 @@ export default function LessonPage() {
                         onClick={() => status === 'idle' && setSelectedWordIndices(prev => [...prev, idx])}
                         disabled={isSelected || status !== 'idle'}
                         className={`px-4 py-2 rounded-2xl border-2 border-b-4 font-bold text-lg transition-all
-                          ${isSelected ? 'border-gray-200 dark:border-slate-700 bg-gray-200 dark:bg-slate-700 text-gray-200 cursor-default border-b-2 translate-y-[2px]' : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-gray-50 active:translate-y-1 active:border-b-0'}
+                          ${isSelected ? 'border-gray-200 dark:border-slate-800 bg-gray-200 dark:bg-slate-800 text-transparent cursor-default border-b-2 translate-y-[2px]' : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-slate-800 active:translate-y-1 active:border-b-0'}
                         `}
                       >
                         {word}
@@ -335,10 +335,10 @@ export default function LessonPage() {
                         disabled={isMatched || status !== 'idle'}
                         className={`
                           p-4 rounded-2xl border-2 border-b-4 font-bold text-lg transition-all
-                          ${isMatched ? 'border-gray-200 dark:border-slate-700 bg-gray-100 text-gray-300 opacity-50 cursor-default border-b-2 translate-y-[2px]' : ''}
-                          ${isSelected && status === 'idle' ? 'border-blue-400 bg-blue-50 text-blue-500' : ''}
-                          ${isWrong && status === 'incorrect' ? 'border-red-500 bg-red-50 text-red-600' : ''}
-                          ${!isMatched && !isSelected && !isWrong ? 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-gray-50 active:border-b-0 active:translate-y-1' : ''}
+                          ${isMatched ? 'border-gray-200 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 text-gray-300 dark:text-slate-600 opacity-50 cursor-default border-b-2 translate-y-[2px]' : ''}
+                          ${isSelected && status === 'idle' ? 'border-blue-400 bg-blue-50 text-blue-500 dark:border-blue-500 dark:bg-blue-900/30 dark:text-blue-400' : ''}
+                          ${isWrong && status === 'incorrect' ? 'border-red-500 bg-red-50 text-red-600 dark:border-red-500 dark:bg-red-900/30 dark:text-red-400' : ''}
+                          ${!isMatched && !isSelected && !isWrong ? 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-slate-800 active:border-b-0 active:translate-y-1' : ''}
                         `}
                       >
                         {word}
