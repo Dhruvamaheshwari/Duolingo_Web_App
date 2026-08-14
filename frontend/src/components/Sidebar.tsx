@@ -23,6 +23,17 @@ export default function Sidebar({ username, totalXp }: SidebarProps) {
     { name: "Profile", href: "/profile", icon: UserIcon },
   ];
 
+  const handleLogout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      await logout();
+    } catch (err) {
+      console.error("Logout error:", err);
+    } finally {
+      window.location.href = '/login';
+    }
+  };
+
   return (
     <>
       {/* Desktop Sidebar */}
@@ -82,12 +93,10 @@ export default function Sidebar({ username, totalXp }: SidebarProps) {
               </div>
             </div>
             <button 
-              onClick={async () => {
-                await logout();
-                router.push('/login');
-              }}
+              onClick={handleLogout}
+              type="button"
               title="Logout"
-              className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all flex-shrink-0"
+              className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all flex-shrink-0 cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
             </button>
