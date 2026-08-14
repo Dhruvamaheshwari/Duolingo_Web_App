@@ -2,33 +2,31 @@ import os
 import django
 import sys
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend_project.settings")
-sys.path.append("backend")
-django.setup()
+if __name__ == '__main__':
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend_project.settings")
+    sys.path.append("backend")
+    django.setup()
 
-from django.test import Client
-from django.contrib.auth.models import User
-from lessons.models import Lesson
+    from django.test import Client
+    from django.contrib.auth.models import User
+    from lessons.models import Lesson
 
-client = Client()
-user = User.objects.first()
-if not user:
-    print("No user")
-    sys.exit(0)
+    client = Client()
+    user = User.objects.first()
+    if not user:
+        print("No user")
+        sys.exit(0)
 
-client.force_login(user)
+    client.force_login(user)
+    lesson = Lesson.objects.first()
 
-lesson1 = Lesson.objects.get(id=1)
-lesson2 = Lesson.objects.get(id=2)
+    print(f"Submitting lesson {lesson.id} for user {user.username}")
+    res = client.post(f'/api/lessons/{lesson.id}/complete/')
+    print(f"Status 1: {res.status_code}")
+    if res.status_code != 200:
+        print(f"Response 1: {res.content}")
 
-print("Completing lesson 1")
-res1 = client.post(f'/api/lessons/{lesson1.id}/complete/')
-print(res1.status_code, res1.content)
-
-print("Completing lesson 2")
-res2 = client.post(f'/api/lessons/{lesson2.id}/complete/')
-print(res2.status_code, res2.content)
-
-print("Completing lesson 2 again")
-res3 = client.post(f'/api/lessons/{lesson2.id}/complete/')
-print(res3.status_code, res3.content)
+    res2 = client.post(f'/api/lessons/{lesson.id}/complete/')
+    print(f"Status 2: {res2.status_code}")
+    if res2.status_code != 200:
+        print(f"Response 2: {res2.content}")

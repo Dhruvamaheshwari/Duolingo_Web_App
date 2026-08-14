@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import Course, Unit, Skill
 from progress.models import UserSkillProgress
-from django.contrib.auth.models import User
 
 class SkillSerializer(serializers.ModelSerializer):
     progress = serializers.SerializerMethodField()
@@ -15,7 +14,6 @@ class SkillSerializer(serializers.ModelSerializer):
     def get_progress(self, obj):
         request = self.context.get('request')
         user = request.user if request and request.user.is_authenticated else None
-
             
         if user:
             progress_obj = UserSkillProgress.objects.filter(user=user, skill=obj).first()
@@ -53,6 +51,9 @@ class SkillSerializer(serializers.ModelSerializer):
                     return 'available'
             
             return 'locked'
+        
+        if obj.position == 1 and obj.unit.position == 1:
+            return 'available'
         return 'locked'
 
     def get_first_lesson_id(self, obj):
@@ -60,7 +61,6 @@ class SkillSerializer(serializers.ModelSerializer):
         user = request.user if request and request.user.is_authenticated else None
             
         if user:
-            completed_lesson_ids = UserSkillProgress.objects.none() # just a placeholder
             from progress.models import UserLessonProgress
             completed_lesson_ids = UserLessonProgress.objects.filter(
                 user=user, lesson__skill=obj, completed=True
@@ -80,9 +80,19 @@ class UnitSerializer(serializers.ModelSerializer):
         model = Unit
         fields = ['id', 'title', 'description', 'position', 'skills']
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['skills'] = SkillSerializer(instance.skills.all(), many=True, context=self.context).data
+        return data
+
 class CourseSerializer(serializers.ModelSerializer):
     units = UnitSerializer(many=True, read_only=True)
 
     class Meta:
         model = Course
         fields = ['id', 'name', 'language', 'description', 'units']
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['units'] = UnitSerializer(instance.units.all(), many=True, context=self.context).data
+        return data
