@@ -8,6 +8,8 @@ from .models import Lesson
 from courses.models import Skill
 from progress.models import UserLessonProgress, UserSkillProgress, UserStats
 from django.contrib.auth.models import User
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 class LessonView(APIView):
     def get(self, request, pk):
@@ -51,6 +53,7 @@ class LessonView(APIView):
             'exercises': exercises
         })
 
+@method_decorator(csrf_exempt, name='dispatch')
 class CompleteLessonView(APIView):
     def post(self, request, pk):
         lesson = get_object_or_404(Lesson, pk=pk)

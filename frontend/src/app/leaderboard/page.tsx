@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getLeaderboard, getLearnerProgress, LeaderboardEntry, LearnerProgress } from "@/lib/api";
-import { Trophy, Medal, Hexagon, Coffee, Flame, Star, Shield, Zap } from "lucide-react";
+import { Trophy, Hexagon, Coffee, Flame, Star, Shield, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function LeaderboardPage() {
@@ -83,7 +83,6 @@ export default function LeaderboardPage() {
           {/* Leaderboard List */}
           <div className="w-full flex flex-col gap-1">
             {leaderboard.map((entry, idx) => {
-              const isTop3 = entry.rank <= 3;
               let rankColor = "text-muted-foreground";
               if (entry.rank === 1) rankColor = "text-amber-500";
               else if (entry.rank === 2) rankColor = "text-gray-400";
@@ -100,11 +99,7 @@ export default function LeaderboardPage() {
                 >
                   <div className="flex items-center gap-6">
                     <div className={`w-8 font-extrabold text-xl text-center ${rankColor}`}>
-                      {isTop3 ? (
-                        <Medal className="w-8 h-8 mx-auto fill-current" />
-                      ) : (
-                        entry.rank
-                      )}
+                      {entry.rank}
                     </div>
                     
                     <div className="flex items-center gap-4">
@@ -114,9 +109,9 @@ export default function LeaderboardPage() {
                         {entry.username.charAt(0).toUpperCase()}
                       </div>
                       
-                      <span className={`text-lg font-bold ${entry.is_current ? 'text-indigo-600 dark:text-indigo-400' : 'text-foreground'}`}>
-                        {entry.username}
-                        {entry.is_current && <span className="ml-3 text-xs bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 px-2.5 py-1 rounded-full uppercase tracking-wider font-extrabold border border-indigo-200 dark:border-indigo-800/50">You</span>}
+                      <span className={`text-lg font-bold truncate max-w-[150px] sm:max-w-xs ${entry.is_current ? 'text-indigo-600 dark:text-indigo-400' : 'text-foreground'}`}>
+                        {entry.username.split('@')[0]}
+                        {entry.is_current && <span className="ml-3 text-xs bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 px-2.5 py-1 rounded-full uppercase tracking-wider font-extrabold border border-indigo-200 dark:border-indigo-800/50 align-middle">You</span>}
                       </span>
                     </div>
                   </div>
@@ -139,8 +134,8 @@ export default function LeaderboardPage() {
               <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-sm bg-indigo-500">
                 {progress.username ? progress.username.charAt(0).toUpperCase() : 'U'}
               </div>
-              <div className="flex-1">
-                <p className="font-bold text-foreground text-lg">{progress.username}</p>
+              <div className="flex-1 overflow-hidden">
+                <p className="font-bold text-foreground text-lg truncate" title={progress.username}>{progress.username.split('@')[0]}</p>
                 <Link href="/profile" className="text-indigo-500 font-bold text-sm hover:opacity-80">VIEW PROFILE</Link>
               </div>
             </div>

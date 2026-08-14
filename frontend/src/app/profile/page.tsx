@@ -81,8 +81,8 @@ export default function ProfilePage() {
 
             <div className="pt-20 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
               <div>
-                <h1 className="text-3xl font-extrabold text-foreground tracking-tight">{progress.username || 'Learner'}</h1>
-                <p className="text-muted-foreground font-medium text-lg">@{progress.username?.toLowerCase() || 'learner'}</p>
+                <h1 className="text-3xl font-extrabold text-foreground tracking-tight">{progress.username ? progress.username.split('@')[0] : 'Learner'}</h1>
+                <p className="text-muted-foreground font-medium text-lg">@{progress.username ? progress.username.split('@')[0].toLowerCase() : 'learner'}</p>
                 
                 <div className="flex gap-6 mt-4 text-sm font-bold text-muted-foreground">
                   <div className="flex items-center gap-1.5">
