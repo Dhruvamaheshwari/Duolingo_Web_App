@@ -4,29 +4,32 @@ import { useEffect, useState } from 'react';
 import { Sun, Moon } from 'lucide-react';
 
 export default function ThemeToggle() {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const shouldBeDark = savedTheme ? savedTheme === 'dark' : prefersDark;
     
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      setIsDark(true);
+    setIsDark(shouldBeDark);
+    if (shouldBeDark) {
       document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
   }, []);
 
   const toggleTheme = () => {
-    if (isDark) {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      setIsDark(false);
-    } else {
+    const nextIsDark = !isDark;
+    setIsDark(nextIsDark);
+    if (nextIsDark) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
-      setIsDark(true);
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
     }
   };
 
@@ -35,16 +38,16 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-xl bg-gray-200 dark:bg-slate-800 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-slate-700 transition-colors flex items-center gap-2 font-bold text-sm"
+      className="p-2 rounded-xl bg-muted text-foreground hover:bg-muted/80 transition-colors flex items-center gap-2 font-bold text-sm border border-border cursor-pointer"
       aria-label="Toggle dark mode"
     >
       {isDark ? (
         <>
-          <Sun className="w-4 h-4" /> Light
+          <Sun className="w-4 h-4 text-amber-400" /> Light
         </>
       ) : (
         <>
-          <Moon className="w-4 h-4" /> Dark
+          <Moon className="w-4 h-4 text-indigo-500" /> Dark
         </>
       )}
     </button>
