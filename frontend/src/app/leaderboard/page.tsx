@@ -71,19 +71,12 @@ export default function LeaderboardPage() {
         <div className="flex-1 flex flex-col">
           
           {/* League Header */}
-          <div className="mb-8 border-b border-border pb-8">
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <Hexagon className="w-8 h-8 text-amber-600 fill-amber-500" />
-              <Hexagon className="w-10 h-10 text-rose-600 fill-rose-500" />
-              <Shield className="w-14 h-14 text-indigo-600 fill-indigo-500 scale-110 mx-2" />
-              <Hexagon className="w-10 h-10 text-muted fill-card opacity-50" />
-              <Hexagon className="w-8 h-8 text-muted fill-card opacity-50" />
-            </div>
-            
-            <div className="text-center">
-              <h1 className="text-3xl font-extrabold tracking-tight text-foreground">Amethyst League</h1>
-              <p className="mt-2 text-primary font-bold">Top 7 advance to the next league</p>
-              <p className="mt-1 font-medium text-muted-foreground text-sm uppercase tracking-wide">3 days remaining</p>
+          <div className="mb-8 border-b border-border pb-8 text-center">
+            <h1 className="text-3xl font-extrabold tracking-tight text-foreground">League Standings</h1>
+            <p className="mt-2 text-muted-foreground font-medium mb-4">Compete with other learners by earning XP.</p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-bold rounded-2xl border border-indigo-100 dark:border-indigo-800">
+              <Trophy className="w-5 h-5" />
+              Current rank: {leaderboard.find(e => e.is_current) ? `#${leaderboard.find(e => e.is_current)?.rank}` : 'Unranked'}
             </div>
           </div>
 
