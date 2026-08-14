@@ -8,6 +8,7 @@ from .serializers import UserStatsSerializer
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from backend_project.auth import CsrfExemptSessionAuthentication
 
 class ProgressView(generics.RetrieveAPIView):
     serializer_class = UserStatsSerializer
@@ -19,8 +20,9 @@ class ProgressView(generics.RetrieveAPIView):
         stats, _ = UserStats.objects.get_or_create(user=user)
         return stats
 
-@method_decorator(csrf_exempt, name='dispatch')
 class DeductHeartView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, )
+    
     def post(self, request):
         user = request.user
         if not user.is_authenticated:
@@ -35,8 +37,9 @@ class DeductHeartView(APIView):
             stats.save()
             return Response({'success': True, 'hearts': stats.hearts})
 
-@method_decorator(csrf_exempt, name='dispatch')
 class RefillHeartsView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, )
+    
     def post(self, request):
         user = request.user
         if not user.is_authenticated:

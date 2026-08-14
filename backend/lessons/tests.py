@@ -38,7 +38,7 @@ class LearnerProgressRulesTest(TestCase):
         self.assertEqual(res2.status_code, 200)
         
         self.stats.refresh_from_db()
-        self.assertEqual(self.stats.total_xp, 20) # XP awarded again for practice
+        self.assertEqual(self.stats.total_xp, 10) # XP NOT awarded again for practice
 
     def test_hearts_logic(self):
         # heart deduction

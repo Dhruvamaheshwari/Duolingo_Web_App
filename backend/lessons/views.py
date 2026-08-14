@@ -10,6 +10,7 @@ from progress.models import UserLessonProgress, UserSkillProgress, UserStats
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from backend_project.auth import CsrfExemptSessionAuthentication
 
 class LessonView(APIView):
     def get(self, request, pk):
@@ -53,41 +54,49 @@ class LessonView(APIView):
             'exercises': exercises
         })
 
-@method_decorator(csrf_exempt, name='dispatch')
 class CompleteLessonView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, )
+    
     def post(self, request, pk):
         lesson = get_object_or_404(Lesson, pk=pk)
         user = request.user
         if not user.is_authenticated:
             return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
             
-        # Check unit access
-        skill = lesson.skill
-        if skill.unit.position > 1:
-            from courses.models import Unit
-            prev_unit = Unit.objects.filter(course=skill.unit.course, position=skill.unit.position - 1).first()
-            if prev_unit:
-                last_skill = prev_unit.skills.order_by('-position').first()
-                if last_skill:
-                    prev_prog = UserSkillProgress.objects.filter(user=user, skill=last_skill).first()
+        is_already_completed = False
+        if user.is_authenticated:
+            existing_prog = UserLessonProgress.objects.filter(user=user, lesson=lesson).first()
+            if existing_prog and existing_prog.completed:
+                is_already_completed = True
+
+        if not is_already_completed:
+            # Check unit access
+            skill = lesson.skill
+            if skill.unit.position > 1:
+                from courses.models import Unit
+                prev_unit = Unit.objects.filter(course=skill.unit.course, position=skill.unit.position - 1).first()
+                if prev_unit:
+                    last_skill = prev_unit.skills.order_by('-position').first()
+                    if last_skill:
+                        prev_prog = UserSkillProgress.objects.filter(user=user, skill=last_skill).first()
+                        if not prev_prog or not prev_prog.completed:
+                            return Response({'error': 'Unit locked.'}, status=status.HTTP_403_FORBIDDEN)
+    
+            # Check skill access
+            if skill.position > 1:
+                prev_skill = Skill.objects.filter(unit=skill.unit, position=skill.position - 1).first()
+                if prev_skill:
+                    prev_prog = UserSkillProgress.objects.filter(user=user, skill=prev_skill).first()
                     if not prev_prog or not prev_prog.completed:
-                        return Response({'error': 'Unit locked.'}, status=status.HTTP_403_FORBIDDEN)
-
-        # Check skill access
-        if skill.position > 1:
-            prev_skill = Skill.objects.filter(unit=skill.unit, position=skill.position - 1).first()
-            if prev_skill:
-                prev_prog = UserSkillProgress.objects.filter(user=user, skill=prev_skill).first()
-                if not prev_prog or not prev_prog.completed:
-                    return Response({'error': 'Skill locked.'}, status=status.HTTP_403_FORBIDDEN)
-
-        # Verify lesson access
-        if lesson.position > 1:
-            prev_lesson = Lesson.objects.filter(skill=lesson.skill, position=lesson.position - 1).first()
-            if prev_lesson:
-                prev_prog = UserLessonProgress.objects.filter(user=user, lesson=prev_lesson).first()
-                if not prev_prog or not prev_prog.completed:
-                    return Response({'error': 'Lesson not accessible yet.'}, status=status.HTTP_403_FORBIDDEN)
+                        return Response({'error': 'Skill locked.'}, status=status.HTTP_403_FORBIDDEN)
+    
+            # Verify lesson access
+            if lesson.position > 1:
+                prev_lesson = Lesson.objects.filter(skill=lesson.skill, position=lesson.position - 1).first()
+                if prev_lesson:
+                    prev_prog = UserLessonProgress.objects.filter(user=user, lesson=prev_lesson).first()
+                    if not prev_prog or not prev_prog.completed:
+                        return Response({'error': 'Lesson not accessible yet.'}, status=status.HTTP_403_FORBIDDEN)
 
         # Check hearts
         stats, _ = UserStats.objects.get_or_create(user=user)
@@ -97,32 +106,35 @@ class CompleteLessonView(APIView):
         with transaction.atomic():
             prog, _ = UserLessonProgress.objects.select_for_update().get_or_create(user=user, lesson=lesson)
             
-            # Allow re-completing lessons (XP is still awarded for practice)
+            is_new_completion = False
+            if not prog.completed:
+                prog.completed = True
+                prog.completed_at = timezone.now()
+                is_new_completion = True
                 
-            prog.completed = True
-            prog.completed_at = timezone.now()
             prog.attempts += 1
             prog.save()
             # Update skill progress
             skill = lesson.skill
             
-            # Award XP and update streak
+            # Award XP and update streak ONLY IF NOT ALREADY COMPLETED
             stats, _ = UserStats.objects.select_for_update().get_or_create(user=user)
             today = timezone.now().date()
             
-            if stats.last_activity_date == today:
-                stats.daily_xp += skill.xp_reward
-            elif stats.last_activity_date == today - timezone.timedelta(days=1):
-                stats.current_streak += 1
-                stats.daily_xp = skill.xp_reward
-                stats.last_activity_date = today
-            else:
-                stats.current_streak = 1
-                stats.daily_xp = skill.xp_reward
-                stats.last_activity_date = today
-                
-            stats.total_xp += skill.xp_reward
-            stats.save()
+            if is_new_completion:
+                if stats.last_activity_date == today:
+                    stats.daily_xp += skill.xp_reward
+                elif stats.last_activity_date == today - timezone.timedelta(days=1):
+                    stats.current_streak += 1
+                    stats.daily_xp = skill.xp_reward
+                    stats.last_activity_date = today
+                else:
+                    stats.current_streak = 1
+                    stats.daily_xp = skill.xp_reward
+                    stats.last_activity_date = today
+                    
+                stats.total_xp += skill.xp_reward
+                stats.save()
             
             total_lessons = skill.lessons.count()
             completed_lessons = UserLessonProgress.objects.filter(
