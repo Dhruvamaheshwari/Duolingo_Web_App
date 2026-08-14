@@ -1,24 +1,20 @@
-from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction
 from .models import UserStats
 from .serializers import UserStatsSerializer
-from django.contrib.auth.models import User
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from backend_project.auth import CsrfExemptSessionAuthentication
 
-class ProgressView(generics.RetrieveAPIView):
-    serializer_class = UserStatsSerializer
+class ProgressView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, )
 
-    def get_object(self):
-        user = self.request.user
-        if not user.is_authenticated:
-            return None
-        stats, _ = UserStats.objects.get_or_create(user=user)
-        return stats
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return Response({'error': 'Not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+        stats, _ = UserStats.objects.get_or_create(user=request.user)
+        serializer = UserStatsSerializer(stats)
+        return Response(serializer.data)
 
 class DeductHeartView(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication, )
@@ -52,6 +48,8 @@ class RefillHeartsView(APIView):
             return Response({'success': True, 'hearts': stats.hearts})
 
 class LeaderboardView(APIView):
+    authentication_classes = (CsrfExemptSessionAuthentication, )
+
     def get(self, request):
         # Return top 20 users by total_xp
         top_stats = UserStats.objects.order_by('-total_xp')[:20]

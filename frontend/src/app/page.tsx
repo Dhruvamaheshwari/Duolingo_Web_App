@@ -46,11 +46,8 @@ export default function Home() {
         setProgress(progressData);
         setLeaderboard(lbData);
       } catch (err: any) {
-        if (err.message === 'Not authenticated' || err.message?.includes('401')) {
-          router.push('/login');
-        } else {
-          console.error(err);
-        }
+        console.error("Home data load error:", err);
+        router.push('/login');
       } finally {
         setLoading(false);
       }
@@ -73,7 +70,13 @@ export default function Home() {
     return (
       <div className="flex h-screen flex-col items-center justify-center bg-background text-red-500 font-bold text-xl gap-4">
         <ShieldAlert className="w-12 h-12" />
-        <span>Error loading learning path. Please try refreshing.</span>
+        <span>Error loading learning path. Redirecting to login...</span>
+        <button
+          onClick={() => router.push('/login')}
+          className="mt-2 text-sm text-emerald-500 underline font-semibold"
+        >
+          Go to Login
+        </button>
       </div>
     );
   }
